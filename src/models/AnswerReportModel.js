@@ -1,16 +1,16 @@
 //lưu lượt báo cáo của ans
-const mongooes = require('mongooes')
+const mongoose = require('mongoose')
 
-const answerReportSchema = new mongooes.Schema(
+const answerReportSchema = new mongoose.Schema(
     {
         //khoa ngoai
         user: {
-            type: mongooes.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'User',
             require: true
         },
         answer: {
-            type: mongooes.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'Answer',
             require: true
         },
@@ -20,5 +20,5 @@ const answerReportSchema = new mongooes.Schema(
     }
 );
 
-const AnswerReport = mongooes.model('AnswerReport', answerReportSchema);
+const AnswerReport = mongoose.model('AnswerReport', answerReportSchema);
 module.exports = AnswerReport;

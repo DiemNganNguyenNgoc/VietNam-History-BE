@@ -1,7 +1,7 @@
 //lưu tỉnh
-const mongooes = require('mongooes')
+const mongoose = require('mongoose')
 
-const provinceSchema = new mongooes.Schema(
+const provinceSchema = new mongoose.Schema(
     {
         name: {type: String, required: true, unique: true},
     },
@@ -10,5 +10,5 @@ const provinceSchema = new mongooes.Schema(
     }
 );
 
-const Province = mongooes.model('Province', provinceSchema);
+const Province = mongoose.model('Province', provinceSchema);
 module.exports = Province;

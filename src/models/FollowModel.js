@@ -1,15 +1,15 @@
 //lưu người theo dõi
-const mongooes = require('mongooes');
+const mongoose = require('mongoose');
 
-const followSchema = new mongooes.Schema(
+const followSchema = new mongoose.Schema(
     {
         follow: {
-            type: mongooes.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'User',
             require: true
         },
         followed: {
-            type: mongooes.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'User',
             require: true
         }
@@ -19,5 +19,5 @@ const followSchema = new mongooes.Schema(
     }
 );
 
-const Follow = mongooes.model('Follow', followSchema);
+const Follow = mongoose.model('Follow', followSchema);
 module.exports = Follow;

@@ -1,16 +1,16 @@
 //lưu lượt report của ques
-const mongooes = require('mongooes')
+const mongoose = require('mongoose')
 
-const questionReportSchema = new mongooes.Schema(
+const questionReportSchema = new mongoose.Schema(
     {
         //khoa ngoai
         user: {
-            type: mongooes.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'User',
             require: true
         },
         question: {
-            type: mongooes.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'Question',
             require: true
         },
@@ -20,5 +20,5 @@ const questionReportSchema = new mongooes.Schema(
     }
 );
 
-const QuestionReport = mongooes.model('QuestionReport', questionReportSchema);
+const QuestionReport = mongoose.model('QuestionReport', questionReportSchema);
 module.exports = QuestionReport;

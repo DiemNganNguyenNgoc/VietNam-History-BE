@@ -1,7 +1,7 @@
 //lưu admin
-const mongooes = require('mongooes')
+const mongoose = require('mongoose')
 
-const userSchema = new mongooes.Schema(
+const userSchema = new mongoose.Schema(
     {
         email: {type: String, required: true, unique: true},
         name: {type: String, required: true},
@@ -13,22 +13,22 @@ const userSchema = new mongooes.Schema(
 
         //khóa ngoại
         province: {
-            type: mongooes.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'Province',
             require: true
         },
         district: {
-            type: mongooes.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'District',
             require: true
         },
         commune: {
-            type: mongooes.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'Commune',
             require: true
         },
         gender: {
-            type: mongooes.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'Gender',
             require: true
         },
@@ -38,5 +38,5 @@ const userSchema = new mongooes.Schema(
     }
 );
 
-const User = mongooes.model('User', userSchema);
+const User = mongoose.model('User', userSchema);
 module.exports = User;

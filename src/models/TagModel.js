@@ -1,7 +1,7 @@
 //lưu tag
-const mongooes = require('mongooes')
+const mongoose = require('mongoose')
 
-const tagSchema = new mongooes.Schema(
+const tagSchema = new mongoose.Schema(
     {
         name: {type: String, required: true, unique: true},
         description: {type: String, required: true},
@@ -9,7 +9,7 @@ const tagSchema = new mongooes.Schema(
 
         //khóa ngoại
         user: {
-            type: mongooes.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'User',
             require: true
         },
@@ -19,5 +19,5 @@ const tagSchema = new mongooes.Schema(
     }
 );
 
-const Tag = mongooes.model('Tag', tagSchema);
+const Tag = mongoose.model('Tag', tagSchema);
 module.exports = Tag;

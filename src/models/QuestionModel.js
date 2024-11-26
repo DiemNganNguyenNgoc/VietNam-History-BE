@@ -1,7 +1,7 @@
 //lưu câu hỏi
-const mongooes = require('mongooes')
+const mongoose = require('mongoose')
 
-const questionSchema = new mongooes.Schema(
+const questionSchema = new mongoose.Schema(
     {
         title: {type: String, required: true},
         content: {type: String, required: true},
@@ -14,7 +14,7 @@ const questionSchema = new mongooes.Schema(
 
         //khóa ngoại
         user: {
-            type: mongooes.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'User',
             require: true
         },
@@ -24,5 +24,5 @@ const questionSchema = new mongooes.Schema(
     }
 );
 
-const Question = mongooes.model('Question', questionSchema);
+const Question = mongoose.model('Question', questionSchema);
 module.exports = Question;

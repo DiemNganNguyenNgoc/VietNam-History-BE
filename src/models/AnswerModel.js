@@ -1,7 +1,7 @@
 //lưu câu trả lời
-const mongooes = require('mongooes');
+const mongoose = require('mongoose');
 
-const answerSchema = new mongooes.Schema(
+const answerSchema = new mongoose.Schema(
     {
         content: {type: String, required: true},
         upVoteCount: {type: Number, required: true}, 
@@ -13,12 +13,12 @@ const answerSchema = new mongooes.Schema(
 
         //khóa ngoại
         user: {
-            type: mongooes.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'User',
             require: true
         },
         question: {
-            type: mongooes.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'Question',
             require: true
         },
@@ -28,5 +28,5 @@ const answerSchema = new mongooes.Schema(
     }
 );
 
-const Answer = mongooes.model('Answer', answerSchema);
+const Answer = mongoose.model('Answer', answerSchema);
 module.exports = Answer;

@@ -1,7 +1,7 @@
 // lưu giới tính 
-const mongooes = require('mongooes')
+const mongoose = require('mongoose')
 
-const genderSchema = new mongooes.Schema(
+const genderSchema = new mongoose.Schema(
     {
         name: {type: String, required: true, unique: true},
     },
@@ -10,5 +10,5 @@ const genderSchema = new mongooes.Schema(
     }
 );
 
-const Gender = mongooes.model('Gender', genderSchema);
+const Gender = mongoose.model('Gender', genderSchema);
 module.exports = Gender;

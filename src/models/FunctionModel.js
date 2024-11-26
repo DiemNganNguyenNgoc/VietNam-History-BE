@@ -1,7 +1,7 @@
 //lưu các chức năng
-const mongooes = require('mongooes')
+const mongoose = require('mongoose')
 
-const functionSchema = new mongooes.Schema(
+const functionSchema = new mongoose.Schema(
     {
         name: {type: String, required: true, unique: true},
         slug: {type: String, required: true, unique: true},
@@ -11,5 +11,5 @@ const functionSchema = new mongooes.Schema(
     }
 );
 
-const Function = mongooes.model('Function', functionSchema);
+const Function = mongoose.model('Function', functionSchema);
 module.exports = Function;

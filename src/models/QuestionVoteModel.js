@@ -1,18 +1,18 @@
 //lưu lượt vote của ques
-const mongooes = require('mongooes')
+const mongoose = require('mongoose')
 
-const questionVoteSchema = new mongooes.Schema(
+const questionVoteSchema = new mongoose.Schema(
     {
         type: {type: Boolean, required: true}, // upvote hoặc downvote
 
         //khoa ngoai
         user: {
-            type: mongooes.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'User',
             require: true
         },
         question: {
-            type: mongooes.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'Question',
             require: true
         },
@@ -22,5 +22,5 @@ const questionVoteSchema = new mongooes.Schema(
     }
 );
 
-const QuestionVote = mongooes.model('QuestionVote', questionVoteSchema);
+const QuestionVote = mongoose.model('QuestionVote', questionVoteSchema);
 module.exports = QuestionVote;

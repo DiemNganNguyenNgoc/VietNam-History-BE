@@ -1,13 +1,13 @@
 //lưu các ảnh của cmt
-const mongooes = require('mongooes')
+const mongoose = require('mongoose')
 
-const commentImgsSchema = new mongooes.Schema(
+const commentImgsSchema = new mongoose.Schema(
     {
         img: {type: String, required: true},
 
         //khoa ngoai
         comment: {
-            type: mongooes.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'Comment',
             require: true
         },
@@ -17,5 +17,5 @@ const commentImgsSchema = new mongooes.Schema(
     }
 );
 
-const CommentImgs = mongooes.model('CommentImgs', commentImgsSchema);
+const CommentImgs = mongoose.model('CommentImgs', commentImgsSchema);
 module.exports = CommentImgs;

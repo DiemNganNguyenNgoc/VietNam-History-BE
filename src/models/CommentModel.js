@@ -1,7 +1,7 @@
 //lưu bình luận của câu trả lời
-const mongooes = require('mongooes');
+const mongoose = require('mongoose');
 
-const commentSchema = new mongooes.Schema(
+const commentSchema = new mongoose.Schema(
     {
         content: {type: String, required: true},
         upVoteCount: {type: Number, required: true}, 
@@ -12,12 +12,12 @@ const commentSchema = new mongooes.Schema(
 
         //khóa ngoại
         user: {
-            type: mongooes.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'User',
             require: true
         },
         answer: {
-            type: mongooes.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'Answer',
             require: true
         },
@@ -27,5 +27,5 @@ const commentSchema = new mongooes.Schema(
     }
 );
 
-const Comment = mongooes.model('Comment', commentSchema);
+const Comment = mongoose.model('Comment', commentSchema);
 module.exports = Comment;

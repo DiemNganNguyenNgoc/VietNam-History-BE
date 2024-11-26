@@ -1,7 +1,7 @@
 //lưu loại danh tiếng
-const mongooes = require('mongooes')
+const mongoose = require('mongoose')
 
-const reputationTypeSchema = new mongooes.Schema(
+const reputationTypeSchema = new mongoose.Schema(
     {
         name: {type: String, required: true, unique: true},
         minScore: {type: Number, required: true},
@@ -13,5 +13,5 @@ const reputationTypeSchema = new mongooes.Schema(
     }
 );
 
-const ReputationType = mongooes.model('ReputationType', reputationTypeSchema);
+const ReputationType = mongoose.model('ReputationType', reputationTypeSchema);
 module.exports = ReputationType;

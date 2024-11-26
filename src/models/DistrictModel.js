@@ -1,11 +1,11 @@
 //lưu huyện
-const mongooes = require('mongooes')
+const mongoose = require('mongoose')
 
-const districtSchema = new mongooes.Schema(
+const districtSchema = new mongoose.Schema(
     {
         name: {type: String, required: true, unique: true},
         province: {
-            type: mongooes.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'Province',
             require: true
         }
@@ -15,5 +15,5 @@ const districtSchema = new mongooes.Schema(
     }
 );
 
-const District = mongooes.model('District', districtSchema);
+const District = mongoose.model('District', districtSchema);
 module.exports = District;

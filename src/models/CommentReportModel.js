@@ -1,16 +1,16 @@
 //lưu lượt vote của cmt
-const mongooes = require('mongooes')
+const mongoose = require('mongoose')
 
-const commentReportSchema = new mongooes.Schema(
+const commentReportSchema = new mongoose.Schema(
     {
         //khoa ngoai
         user: {
-            type: mongooes.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'User',
             require: true
         },
         comment: {
-            type: mongooes.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'Comment',
             require: true
         },
@@ -20,5 +20,5 @@ const commentReportSchema = new mongooes.Schema(
     }
 );
 
-const CommentReport = mongooes.model('CommentReport', commentReportSchema);
+const CommentReport = mongoose.model('CommentReport', commentReportSchema);
 module.exports = CommentReport;

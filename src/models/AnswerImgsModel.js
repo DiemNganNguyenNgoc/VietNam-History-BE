@@ -1,13 +1,13 @@
 //lưu các ảnh của ans
-const mongooes = require('mongooes')
+const mongoose = require('mongoose')
 
-const answerImgsSchema = new mongooes.Schema(
+const answerImgsSchema = new mongoose.Schema(
     {
         img: {type: String, required: true},
 
         //khoa ngoai
         answer: {
-            type: mongooes.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'Answer',
             require: true
         },
@@ -17,5 +17,5 @@ const answerImgsSchema = new mongooes.Schema(
     }
 );
 
-const AnswerImgs = mongooes.model('AnswerImgs', answerImgsSchema);
+const AnswerImgs = mongoose.model('AnswerImgs', answerImgsSchema);
 module.exports = AnswerImgs;

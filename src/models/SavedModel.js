@@ -1,15 +1,15 @@
 //lưu các bài lưu của người dùng
-const mongooes = require('mongooes');
+const mongoose = require('mongoose');
 
-const savedSchema = new mongooes.Schema(
+const savedSchema = new mongoose.Schema(
     {
         question: {
-            type: mongooes.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'Question',
             require: true
         },
         user: {
-            type: mongooes.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'User',
             require: true
         }
@@ -19,5 +19,5 @@ const savedSchema = new mongooes.Schema(
     }
 );
 
-const Saved = mongooes.model('Saved', savedSchema);
+const Saved = mongoose.model('Saved', savedSchema);
 module.exports = Saved;
