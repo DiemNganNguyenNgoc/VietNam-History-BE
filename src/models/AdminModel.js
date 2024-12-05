@@ -13,22 +13,22 @@ const userSchema = new mongoose.Schema(
 
         //khóa ngoại
         province: {
-            type: mongoose.Schema.Types.ObjectId, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'Province',
             require: true
         },
         district: {
-            type: mongoose.Schema.Types.ObjectId, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'District',
             require: true
         },
         commune: {
-            type: mongoose.Schema.Types.ObjectId, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'Commune',
             require: true
         },
         gender: {
-            type: mongoose.Schema.Types.ObjectId, 
+            type: mongoose.Schema.Types.Objectid, 
             ref: 'Gender',
             require: true
         },
