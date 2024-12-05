@@ -5,14 +5,14 @@ const tagSchema = new mongoose.Schema(
     {
         name: {type: String, required: true, unique: true},
         description: {type: String, required: true},
-        usedCount: {type: Number, required: true}, //đếm lượt đã sử dụng
+        usedCount: {type: Number, default: 0}, //đếm lượt đã sử dụng
 
         //khóa ngoại
-        user: {
-            type: mongoose.Schema.Types.Objectid, 
-            ref: 'User',
-            require: true
-        },
+        // user: {
+        //     type: mongoose.Schema.Types.Objectid, 
+        //     ref: 'User',
+        //     require: true
+        // },
     },
     {
         timestamps: true,
