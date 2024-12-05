@@ -174,6 +174,37 @@ const refreshToken = async (req, res) => {
     });
   }
 };
+
+//view follower
+const viewFollower = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    if (!userId) {
+      return res.status(400).json({
+        status: "ERR",
+        message: "The userId is required",
+      });
+    }
+
+    const response = await UserServices.viewFollower(userId);
+
+    // Kiểm tra response từ service và phản hồi theo tình huống
+    if (response.status === "ERR") {
+      return res.status(404).json(response); // Trả về mã lỗi 404 nếu user không tồn tại
+    }
+
+    return res.status(200).json(response); // Trả về thành công
+  } catch (e) {
+    return res.status(500).json({
+      status: "ERR",
+      message: "Internal Server Error",
+      error: e.message,
+    });
+  }
+};
+
+
 module.exports = {
   createUser,
   loginUser,
@@ -181,5 +212,6 @@ module.exports = {
   deleteUser,
   getAllUser,
   getDetailsUser,
+  viewFollower,
   refreshToken,
 };

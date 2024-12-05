@@ -203,6 +203,33 @@ const getDetailsUser = (id) => {
   });
 };
 
+//view follower
+const viewFollower = (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Tìm user dựa trên ID
+      const user = await User.findOne({ _id: id }).populate("followers"); // Populate thêm danh sách followers
+
+      // Nếu user không tồn tại
+      if (!user) {
+        return resolve({
+          status: "ERR",
+          message: "The user does not exist",
+        });
+      }
+
+      // Trả về danh sách followers
+      resolve({
+        status: "OK",
+        message: "SUCCESS",
+        data: user.followers, // Trả về danh sách followers
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 //tạo access token dựa vào refresh token
 
 module.exports = {
@@ -212,4 +239,5 @@ module.exports = {
   deleteUser,
   getAllUser,
   getDetailsUser,
+  viewFollower,
 };
