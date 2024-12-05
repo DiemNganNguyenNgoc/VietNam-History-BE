@@ -7,7 +7,7 @@ const createTag = (newTag) => {
             const checkTag = await Tag.findOne({ name: name });
             if (checkTag !== null) {
                 resolve({
-                    status: 'OK',
+                    status: 'ERR',
                     message: 'The tag name is already taken'
                 });
             }
