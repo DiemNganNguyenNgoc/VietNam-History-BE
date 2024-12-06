@@ -1,14 +1,33 @@
 const express = require("express");
 const router = express.Router();
-const userController = require("../controllers/UserController");
+const adminController = require("../controllers/AdminController");
 const { authMiddleware, authUserMiddleware } = require("../middleware/authMiddleware");
 
-router.post("/sign-up", userController.createUser);
-router.post("/log-in", userController.loginUser);
-router.put("/update-user/:id", userController.updateUser);
-router.delete("/delete-user/:id", authMiddleware, userController.deleteUser); //xoá user
-router.get("/getAll", authMiddleware, userController.getAllUser); //lấy info user cho admin
-router.get("/get-details/:id", authUserMiddleware, userController.getDetailsUser); //lấy info user cho user
-router.post("/refresh-token", userController.refreshToken); //cấp access token mới sau khi token cũ hết hạn dựa vào refresh token
-router.get("/view-follower/:id", userController.viewFollower);
+// Đăng ký admin
+router.post("/sign-up", adminController.createAdmin);
+
+// Đăng nhập admin
+router.post("/log-in", adminController.loginAdmin);
+
+// Lấy thông tin chi tiết của admin
+router.get("/get-admin/:id", authUserMiddleware, adminController.getDetailsAdmin);
+
+// Lấy danh sách tất cả admin (có phân trang)
+router.get("/get-all", authMiddleware, adminController.getAllAdmin);
+
+// Cập nhật thông tin admin
+router.put("/update-admin/:id", authMiddleware, adminController.updateAdmin);
+
+// Xóa tài khoản admin
+router.delete("/delete-admin/:id", authMiddleware, adminController.deleteAdmin);
+
+// Refresh token
+router.post("/refresh-token", adminController.refreshToken);
+
+// Đổi mật khẩu admin
+router.put("/change-password/:id", authMiddleware, adminController.changePasswordAdmin);
+
+// Kích hoạt/Vô hiệu hóa admin
+router.put("/toggle-admin-status/:id", authMiddleware, adminController.toggleAdminStatus);
+
 module.exports = router;
