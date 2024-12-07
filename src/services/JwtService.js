@@ -16,7 +16,7 @@ const generalAccessToken = (payload) => {
 };
 
 const generalRefreshToken = (payload) => {
-  //console.log("payload ", payload);
+  console.log("payload ", payload);
   const refresh_token = jwt.sign(
     {
       payload,

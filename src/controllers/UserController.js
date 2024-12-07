@@ -5,18 +5,15 @@ const validator = require("validator");
 //tạo tài khoản
 const createUser = async (req, res) => {
   try {
-    //console.log(req.body);
-    //test input data
-    const { name, phone, email, password, confirmPassword } = req.body;
-    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; //check email
-    const isValidEmail = emailPattern.test(email);
-    if (!name || !phone || !email || !password || !confirmPassword) {
-      //check have
+    const { name, email, password, confirmPassword, phone } = req.body;
+    const reg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; //check email
+    const isCheckEmail = reg.test(email);
+    if (!name || !email || !password || !confirmPassword || !phone) {
       return res.status(200).json({
         status: "ERR",
         message: "The input is required",
       });
-    } else if (!isValidEmail) {
+    } else if (!isCheckEmail) {
       return res.status(200).json({
         status: "ERR",
         message: "The input is not email",
@@ -27,8 +24,6 @@ const createUser = async (req, res) => {
         message: "The password is not equal confirmPassword",
       });
     }
-
-    console.log("isValidEmail ", isValidEmail);
 
     const response = await UserServices.createUser(req.body);
     return res.status(200).json(response);
@@ -44,16 +39,16 @@ const loginUser = async (req, res) => {
   try {
     console.log(req.body);
     //test input data
-    const { name, phone, email, password, confirmPassword } = req.body;
-    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; //check email
-    const isValidEmail = emailPattern.test(email);
-    if (!name || !phone || !email || !password || !confirmPassword) {
+    const { name, email, password, confirmPassword, phone } = req.body;
+    const reg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; //check email
+    const isCheckEmail = reg.test(email);
+    if (!name || !email || !password || !confirmPassword || !phone) {
       //check have
       return res.status(200).json({
         status: "ERR",
         message: "The input is required",
       });
-    } else if (!isValidEmail) {
+    } else if (!isCheckEmail) {
       return res.status(200).json({
         status: "ERR",
         message: "The input is not email",
@@ -64,8 +59,6 @@ const loginUser = async (req, res) => {
         message: "The password is not equal confirmPassword",
       });
     }
-
-    console.log("isValidEmail ", isValidEmail);
 
     const response = await UserServices.loginUser(req.body);
     return res.status(200).json(response);
@@ -88,7 +81,7 @@ const updateUser = async (req, res) => {
       });
     }
 
-    //console.log("userId", userId);
+    console.log("userId", userId);
     const response = await UserServices.updateUser(userId, data);
     return res.status(200).json(response);
   } catch (e) {
@@ -102,8 +95,7 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
   try {
     const userId = req.params.id;
-    //const token = req.headers;
-
+    const token = req.headers;
     if (!userId) {
       return res.status(200).json({
         status: "ERR",

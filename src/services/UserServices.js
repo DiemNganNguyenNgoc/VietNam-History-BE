@@ -5,7 +5,7 @@ const { generalAccessToken } = require("./JwtService");
 //tạo user
 const createUser = (newUser) => {
   return new Promise(async (resolve, reject) => {
-    const { name, phone, email, password, confirmPassword } = newUser;
+    const { name, email, password, confirmPassword, phone } = newUser;
     try {
       //check email created
       const checkUser = await User.findOne({
@@ -21,12 +21,13 @@ const createUser = (newUser) => {
       //mã hóa password
       const hash = bcrypt.hashSync(password, 10);
       console.log("hash", hash);
+
       const createdUser = await User.create({
         name,
-        phone,
         email,
         password: hash,
-        // confirmPassword
+        confirmPassword: hash,
+        phone,
       });
       if (createdUser) {
         resolve({
@@ -44,7 +45,7 @@ const createUser = (newUser) => {
 //log in user
 const loginUser = (userLogin) => {
   return new Promise(async (resolve, reject) => {
-    const { name, phone, email, password, confirmPassword } = userLogin;
+    const { name, email, password, confirmPassword, phone } = userLogin;
     try {
       //check email created
       const checkUser = await User.findOne({
@@ -59,7 +60,7 @@ const loginUser = (userLogin) => {
       }
 
       const comparePassword = bcrypt.compareSync(password, checkUser.password);
-      //console.log("comparePassword ", comparePassword);
+      console.log("comparePassword ", comparePassword);
 
       if (!comparePassword) {
         resolve({
@@ -78,7 +79,7 @@ const loginUser = (userLogin) => {
         isAdmin: checkUser.isAdmin,
       });
 
-      //console.log("access_token ", access_token);
+      console.log("access_token ", access_token);
 
       resolve({
         status: "OK",
@@ -131,7 +132,7 @@ const deleteUser = (id) => {
       const checkUser = await User.findOne({
         _id: id,
       });
-      //console.log("checkUser", checkUser);
+      console.log("checkUser", checkUser);
 
       //nếu user ko tồn tại
       if (checkUser === null) {
@@ -142,7 +143,6 @@ const deleteUser = (id) => {
       }
 
       await User.findByIdAndDelete(id);
-      //console.log("updatedUser", updatedUser);
       resolve({
         status: "OK",
         message: "DELETE USER IS SUCCESS",
