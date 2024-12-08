@@ -230,6 +230,38 @@ const viewFollower = (id) => {
   });
 };
 
+//add follower
+const addFollower = async (currentUserId, userIdToFollow) => {
+  // Kiểm tra người dùng có tồn tại không
+  const userToFollow = await User.findById(userIdToFollow);
+  if (!userToFollow) {
+    throw new Error("User to follow does not exist.");
+  }
+
+  const currentUser = await User.findById(currentUserId);
+  if (!currentUser) {
+    throw new Error("Current user does not exist.");
+  }
+
+  // Kiểm tra xem đã follow chưa
+  if (userToFollow.followers.includes(currentUserId)) {
+    throw new Error("You are already following this user.");
+  }
+
+  // Thêm follower
+  userToFollow.followers.push(currentUserId);
+  await userToFollow.save();
+
+  // Thêm vào danh sách following của currentUser
+  currentUser.following.push(userIdToFollow);
+  await currentUser.save();
+
+  return {
+    following: currentUser.following,
+    followers: userToFollow.followers,
+  };
+};
+
 //tạo access token dựa vào refresh token
 
 module.exports = {
@@ -240,4 +272,5 @@ module.exports = {
   getAllUser,
   getDetailsUser,
   viewFollower,
+  addFollower,
 };

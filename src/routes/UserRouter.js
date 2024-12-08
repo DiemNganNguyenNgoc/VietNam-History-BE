@@ -11,4 +11,5 @@ router.get("/getAll", authMiddleware, userController.getAllUser); //lấy info u
 router.get("/get-details/:id", authUserMiddleware, userController.getDetailsUser); //lấy info user cho user
 router.post("/refresh-token", userController.refreshToken); //cấp access token mới sau khi token cũ hết hạn dựa vào refresh token
 router.get("/view-follower/:id", userController.viewFollower);
+router.post("/add-follower/:id", userController.addFollower);
 module.exports = router;

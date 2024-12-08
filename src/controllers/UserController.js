@@ -196,6 +196,41 @@ const viewFollower = async (req, res) => {
   }
 };
 
+//add follower
+const addFollower = async (req, res) => {
+  try {
+    const userIdToFollow = req.params.id; // ID của user sẽ được follow
+    const currentUserId = req.user.id; // ID của người gửi request (lấy từ token)
+
+    // Kiểm tra xem ID có hợp lệ không
+    if (!userIdToFollow || !currentUserId) {
+      return res.status(400).json({
+        status: "ERR",
+        message: "User ID is required.",
+      });
+    }
+
+    if (userIdToFollow === currentUserId) {
+      return res.status(400).json({
+        status: "ERR",
+        message: "You cannot follow yourself.",
+      });
+    }
+
+    // Thêm follower qua service
+    const response = await UserServices.addFollower(currentUserId, userIdToFollow);
+    return res.status(200).json({
+      status: "OK",
+      message: "Successfully followed the user.",
+      data: response,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "ERR",
+      message: error.message,
+    });
+  }
+};
 
 module.exports = {
   createUser,
@@ -206,4 +241,5 @@ module.exports = {
   getDetailsUser,
   viewFollower,
   refreshToken,
+  addFollower,
 };
