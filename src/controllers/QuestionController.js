@@ -102,10 +102,14 @@ const getAllQuestion = async (req, res) => {
   }
 };
 
+
+
+
 module.exports = {
   createQuestion,
   updateQuestion,
   deleteQuestion,
   getDetailsQuestion,
   getAllQuestion,
+
 };
