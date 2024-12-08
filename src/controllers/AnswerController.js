@@ -4,11 +4,30 @@ const AnswerService = require("../services/AnswerService");
 const createAnswer = async (req, res) => {
   try {
     //test input data
-    const { content, upVoteCount, downVoteCount, commentCount, view, reportCount, active, user, question } =
-      req.body;
+    const {
+      content,
+      upVoteCount,
+      downVoteCount,
+      commentCount,
+      view,
+      reportCount,
+      active,
+      user,
+      question,
+    } = req.body;
     //console.log("req.body", req.body);
 
-    if (!content|| upVoteCount|| downVoteCount|| commentCount|| view|| reportCount|| active|| user|| question ) {
+    if (
+      !content ||
+      upVoteCount ||
+      downVoteCount ||
+      commentCount ||
+      view ||
+      reportCount ||
+      active ||
+      user ||
+      question
+    ) {
       //check have
       return res.status(200).json({
         status: "ERR",
@@ -93,11 +112,34 @@ const getDetailsAnswer = async (req, res) => {
 const getAllAnswer = async (req, res) => {
   try {
     const { limit, page, sort, filter } = req.query;
-    const response = await AnswerService.getAllAnswer(Number(limit) || 8, Number(page) || 0, sort, filter);
+    const response = await AnswerService.getAllAnswer(
+      Number(limit) || 8,
+      Number(page) || 0,
+      sort,
+      filter
+    );
     return res.status(200).json(response);
   } catch (e) {
     return res.status(404).json({
       message: e,
+    });
+  }
+};
+
+const getQuestionByAnswer = async (req, res) => {
+  try {
+    const question = await AnswerService.getQuestionByAnswer(
+      req.params.questionId
+    );
+    res.status(200).json({
+      status: "OK",
+      message: "Question fetched successfully.",
+      data: question,
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "ERR",
+      message: err.message,
     });
   }
 };
@@ -108,4 +150,5 @@ module.exports = {
   deleteAnswer,
   getDetailsAnswer,
   getAllAnswer,
+  getQuestionByAnswer,
 };

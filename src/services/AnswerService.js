@@ -3,8 +3,17 @@ const Answer = require("../models/AnswerModel");
 //tạo Answer
 const createAnswer = (newAnswer) => {
   return new Promise(async (resolve, reject) => {
-    const { content, upVoteCount, downVoteCount, commentCount, view, reportCount, active, user, question } =
-      newAnswer;
+    const {
+      content,
+      upVoteCount,
+      downVoteCount,
+      commentCount,
+      view,
+      reportCount,
+      active,
+      user,
+      question,
+    } = newAnswer;
 
     try {
       //check tên sản phẩm
@@ -20,15 +29,15 @@ const createAnswer = (newAnswer) => {
       }
 
       const createdAnswer = await Answer.create({
-        content, 
-        upVoteCount, 
-        downVoteCount, 
-        commentCount, 
-        view, 
-        reportCount, 
-        active, 
-        user, 
-        question 
+        content,
+        upVoteCount,
+        downVoteCount,
+        commentCount,
+        view,
+        reportCount,
+        active,
+        user,
+        question,
       });
       if (createdAnswer) {
         resolve({
@@ -139,10 +148,14 @@ const getAllAnswer = (limit, page, sort, filter) => {
   return new Promise(async (resolve, reject) => {
     try {
       const totalAnswer = await Answer.countDocuments();
-      
-      if(filter){
+
+      if (filter) {
         const label = filter[0];
-        const allAnswerFilter = await Answer.find({ [label]: {'$regex': filter[1] } }).limit(limit).skip(page * limit) //filter gần đúng
+        const allAnswerFilter = await Answer.find({
+          [label]: { $regex: filter[1] },
+        })
+          .limit(limit)
+          .skip(page * limit); //filter gần đúng
         resolve({
           status: "OK",
           message: "Get all Answer IS SUCCESS",
@@ -153,11 +166,14 @@ const getAllAnswer = (limit, page, sort, filter) => {
         });
       }
 
-      if(sort){
+      if (sort) {
         const objectSort = {};
         objectSort[sort[1]] = sort[0];
         //console.log('objectSort', objectSort)
-        const allAnswerSort = await Answer.find().limit(limit).skip(page * limit).sort(objectSort);
+        const allAnswerSort = await Answer.find()
+          .limit(limit)
+          .skip(page * limit)
+          .sort(objectSort);
         resolve({
           status: "OK",
           message: "Get all Answer IS SUCCESS",
@@ -168,7 +184,9 @@ const getAllAnswer = (limit, page, sort, filter) => {
         });
       }
 
-      const allAnswer = await Answer.find().limit(limit).skip(page * limit);
+      const allAnswer = await Answer.find()
+        .limit(limit)
+        .skip(page * limit);
       resolve({
         status: "OK",
         message: "Get all Answer IS SUCCESS",
@@ -183,10 +201,22 @@ const getAllAnswer = (limit, page, sort, filter) => {
   });
 };
 
+const getQuestionByAnswer = async (answerId) => {
+  try {
+    const question = await Answer.findById(answerId);
+
+    if (!question) throw new Error("Question not found.");
+    return question;
+  } catch (err) {
+    throw new Error(err.message);
+  }
+};
+
 module.exports = {
   createAnswer,
   updateAnswer,
   deleteAnswer,
   getDetailsAnswer,
   getAllAnswer,
+  getQuestionByAnswer,
 };
