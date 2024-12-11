@@ -69,4 +69,19 @@ const deleteTag = (id) => {
     });
 };
 
-module.exports = { createTag, updateTag, deleteTag };
+const getAllTag = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const allTag=await Tag.find()
+            resolve({
+                status: 'OK',
+                message: 'Success',
+                data: allTag,
+            })
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
+module.exports = { createTag, updateTag, deleteTag, getAllTag };
