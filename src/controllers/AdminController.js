@@ -14,11 +14,14 @@ const createAdmin = async (req, res) => {
       img,
       birthday,
       note,
-      province,
-      district,
-      commune,
-      gender,
+      isAdmin,
+      // province,
+      // district,
+      // commune,
+      // gender,
     } = req.body;
+
+    // console.log(req.body);
 
     // Kiểm tra dữ liệu đầu vào
     if (
@@ -27,11 +30,11 @@ const createAdmin = async (req, res) => {
       !password ||
       !confirmPassword ||
       !phone ||
-      !birthday ||
-      !province ||
-      !district ||
-      !commune ||
-      !gender
+      !birthday
+      // !province ||
+      // !district ||
+      // !commune ||
+      // !gender
     ) {
       return res.status(400).json({
         status: "ERR",
@@ -67,22 +70,25 @@ const createAdmin = async (req, res) => {
 const loginAdmin = async (req, res) => {
   try {
     const { email, password } = req.body;
+    // console.log(email, " ", password);
+
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; //check email
+    const isValidEmail = emailPattern.test(email);
 
     if (!email || !password) {
+      //check have
       return res.status(400).json({
         status: "ERR",
-        message: "Email and password are required.",
+        message: "Email and password are required",
+      });
+    } else if (!isValidEmail) {
+      return res.status(200).json({
+        status: "ERR",
+        message: "The input is not email",
       });
     }
 
-    if (!validator.isEmail(email)) {
-      return res.status(400).json({
-        status: "ERR",
-        message: "Invalid email format.",
-      });
-    }
-
-    const response = await AdminService.loginAdmin(email, password);
+    const response = await AdminService.loginAdmin(req.body);
     return res.status(200).json(response);
   } catch (e) {
     return res.status(500).json({

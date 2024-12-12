@@ -1,6 +1,6 @@
 const Admin = require("../models/AdminModel");
 const bcrypt = require("bcrypt");
-const { generalAccessToken } = require("./JwtService");
+const { generalAccessToken, generalRefreshToken } = require("./JwtService");
 
 //tạo Admin
 const createAdmin = (newAdmin) => {
@@ -14,10 +14,11 @@ const createAdmin = (newAdmin) => {
       img,
       birthday,
       note,
-      province,
-      district,
-      commune,
-      gender,
+      isAdmin,
+      // province,
+      // district,
+      // commune,
+      // gender,
     } = newAdmin;
     try {
       //check email created
@@ -26,27 +27,36 @@ const createAdmin = (newAdmin) => {
       });
       //nếu email đã tồn tại
       if (checkAdmin !== null) {
-        resolve({
-          status: "OK",
-          message: "The email is already",
+        return reject({
+          status: "ERR",
+          message: "The email is already in use",
         });
       }
+
+      if (!password) {
+        return reject({
+          status: "ERR",
+          message: "Password is required",
+        });
+      }
+
       //mã hóa password
       const hash = bcrypt.hashSync(password, 10);
-      console.log("hash", hash);
+      // console.log("hash", hash);
       const createdAdmin = await Admin.create({
         email,
         name,
         password: hash,
-        // confirmPassword,
+        confirmPassword,
         phone,
         img,
         birthday,
         note,
-        province,
-        district,
-        commune,
-        gender,
+        isAdmin,
+        // province,
+        // district,
+        // commune,
+        // gender,
 
         // confirmPassword
       });
@@ -66,40 +76,27 @@ const createAdmin = (newAdmin) => {
 //log in Admin
 const loginAdmin = (adminLogin) => {
   return new Promise(async (resolve, reject) => {
-    const {
-      email,
-      name,
-      password,
-      confirmPassword,
-      phone,
-      img,
-      birthday,
-      note,
-      province,
-      district,
-      commune,
-      gender,
-    } = adminLogin;
+    const { email, password } = adminLogin;
+    console.log(email, " ", password);
+
     try {
-      //check email created
-      const checkAdmin = await Admin.findOne({
-        email: email,
-      });
-      //nếu email đã tồn tại
-      if (checkAdmin === null) {
-        resolve({
-          status: "OK",
-          message: "The Admin is not defined",
+      // Check if the user exists
+      const checkAdmin = await Admin.findOne({ email: email });
+      console.log("email: ", email);
+
+      if (!checkAdmin) {
+        return reject({
+          status: "ERR",
+          message: "User not found",
         });
       }
 
+      // Compare passwords
       const comparePassword = bcrypt.compareSync(password, checkAdmin.password);
-      //console.log("comparePassword ", comparePassword);
-
       if (!comparePassword) {
-        resolve({
-          status: "OK",
-          message: "The password or Admin is incorrect",
+        return reject({
+          status: "ERR",
+          message: "Incorrect password",
         });
       }
 
@@ -113,16 +110,18 @@ const loginAdmin = (adminLogin) => {
         isAdmin: checkAdmin.isAdmin,
       });
 
-      //console.log("access_token ", access_token);
-
       resolve({
         status: "OK",
-        message: "SUCCESS",
+        message: "Login successful",
         access_token,
         refresh_token,
       });
     } catch (e) {
-      reject(e);
+      console.error("Unexpected error:", e);
+      reject({
+        status: "ERR",
+        message: "Internal Server Error",
+      });
     }
   });
 };

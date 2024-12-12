@@ -1,42 +1,42 @@
 //lưu admin
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
-const userSchema = new mongoose.Schema(
-    {
-        email: {type: String, required: true, unique: true},
-        name: {type: String, required: true},
-        password: {type: String, required: true},
-        phone: {type: String, required: true},
-        img: {type: String},
-        birthday: {type: Date, required: true},
-        note: {type: String}, //textbox 'about me'    
-
-        //khóa ngoại
-        province: {
-            type: mongoose.Schema.Types.Objectid, 
-            ref: 'Province',
-            require: true
-        },
-        district: {
-            type: mongoose.Schema.Types.Objectid, 
-            ref: 'District',
-            require: true
-        },
-        commune: {
-            type: mongoose.Schema.Types.Objectid, 
-            ref: 'Commune',
-            require: true
-        },
-        gender: {
-            type: mongoose.Schema.Types.Objectid, 
-            ref: 'Gender',
-            require: true
-        },
+const adminSchema = new mongoose.Schema(
+  {
+    email: { type: String, required: true, unique: true },
+    name: { type: String, required: true },
+    password: { type: String, required: true },
+    phone: { type: String, required: true },
+    img: { type: String, required: false },
+    birthday: { type: Date, required: true },
+    note: { type: String, required: false }, //textbox 'about me'
+    isAdmin: { type: Boolean, required: true, default: false },
+    //khóa ngoại
+    province: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Province",
+      required: false,
     },
-    {
-        timestamps: true,
-    }
+    district: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "District",
+      required: false,
+    },
+    commune: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Commune",
+      required: false,
+    },
+    gender: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Gender",
+      required: false,
+    },
+  },
+  {
+    timestamps: true,
+  }
 );
 
-const User = mongoose.model('User', userSchema);
-module.exports = User;
+const Admin = mongoose.model("Admin", adminSchema);
+module.exports = Admin;
