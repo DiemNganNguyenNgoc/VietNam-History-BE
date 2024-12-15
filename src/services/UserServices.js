@@ -1,6 +1,6 @@
 const User = require("../models/UserModel");
 const bcrypt = require("bcrypt");
-const { generalAccessToken } = require("./JwtService");
+const { generalAccessToken, generalRefreshToken } = require("./JwtService");
 
 //tạo user
 const createUser = (newUser) => {
@@ -45,7 +45,7 @@ const createUser = (newUser) => {
 //log in user
 const loginUser = (userLogin) => {
   return new Promise(async (resolve, reject) => {
-    const { name, email, password, confirmPassword, phone } = userLogin;
+    const { email, password} = userLogin;
     try {
       //check email created
       const checkUser = await User.findOne({
@@ -53,8 +53,8 @@ const loginUser = (userLogin) => {
       });
       //nếu email đã tồn tại
       if (checkUser === null) {
-        resolve({
-          status: "OK",
+        return reject({
+          status: "ERR",
           message: "The user is not defined",
         });
       }
@@ -63,8 +63,8 @@ const loginUser = (userLogin) => {
       console.log("comparePassword ", comparePassword);
 
       if (!comparePassword) {
-        resolve({
-          status: "OK",
+        return reject({
+          status: "ERR",
           message: "The password or user is incorrect",
         });
       }

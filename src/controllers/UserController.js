@@ -39,10 +39,12 @@ const loginUser = async (req, res) => {
   try {
     console.log(req.body);
     //test input data
-    const { name, email, password, confirmPassword, phone } = req.body;
+    const { email, password } = req.body;
+    console.log('reg.body');
     const reg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; //check email
     const isCheckEmail = reg.test(email);
-    if (!name || !email || !password || !confirmPassword || !phone) {
+    console.log(email, password);
+    if (!email || !password) {
       //check have
       return res.status(200).json({
         status: "ERR",
@@ -52,11 +54,6 @@ const loginUser = async (req, res) => {
       return res.status(200).json({
         status: "ERR",
         message: "The input is not email",
-      });
-    } else if (password !== confirmPassword) {
-      return res.status(200).json({
-        status: "ERR",
-        message: "The password is not equal confirmPassword",
       });
     }
 

@@ -1,4 +1,3 @@
-//lưu người dùng
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
@@ -7,34 +6,34 @@ const userSchema = new mongoose.Schema(
     name: { type: String, required: true },
     password: { type: String, required: true },
     phone: { type: String, required: true },
-    img: { type: String },
-    birthday: { type: Date, required: true },
-    note: { type: String }, //textbox 'about me'
-    facebookLink: { type: String },
-    githubLink: { type: String },
-    reportCount: { type: Number, required: true }, //đếm số lần bị báo cáo dựa trên các report từ ques, ans, cmt
-    followerCount: { type: Number, required: true },
-    followingCount: { type: Number, required: true },
-    savedCount: { type: Number, required: true },
-    score: { type: Number, required: true },
-    active: { type: Boolean, required: true }, //trạng thái người dùng: bị cấm hoặc kh
+    img: { type: String, default: "" }, // Mặc định là chuỗi rỗng
+    birthday: { type: Date, default: null }, // Mặc định là null
+    note: { type: String, default: "" }, // Mặc định là chuỗi rỗng
+    facebookLink: { type: String, default: "" },
+    githubLink: { type: String, default: "" },
+    reportCount: { type: Number, default: 0 }, // Mặc định là 0
+    followerCount: { type: Number, default: 0 }, // Mặc định là 0
+    followingCount: { type: Number, default: 0 }, // Mặc định là 0
+    savedCount: { type: Number, default: 0 }, // Mặc định là 0
+    score: { type: Number, default: 0 }, // Mặc định là 0
+    active: { type: Boolean, default: true }, // Mặc định là true
+    isAdmin: { type: Boolean, default: false },
 
-    //khóa ngoại
+    // Khóa ngoại (có thể bỏ qua hoặc thêm giá trị mặc định)
     reputationType: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "ReputationType",
-      require: true,
+      required: false,
     },
     address: {
-      //địa chỉ thì chắc lưu tỉnh/thành thôi
       type: mongoose.Schema.Types.ObjectId,
       ref: "Province",
-      require: true,
+      required: false,
     },
     gender: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Gender",
-      require: true,
+      required: false,
     },
   },
   {
