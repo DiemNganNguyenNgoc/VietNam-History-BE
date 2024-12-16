@@ -15,8 +15,7 @@ const authMiddleware = (req, res, next) => {
     }
 
     //nếu có user isAdmin
-    const { payload } = user;
-    if (payload?.isAdmin) {
+    if (user?.isAdmin) {
       console.log("true");
       next();
     } else {
@@ -42,8 +41,7 @@ const authUserMiddleware = (req, res, next) => {
     }
 
     //nếu có user isAdmin
-    const { payload } = user;
-    if (payload?.isAdmin || payload?.id === userId)//=== thì cho đi tiếp 
+    if (user?.isAdmin || user?.id === userId)//=== thì cho đi tiếp 
     {
       console.log("true");
       next();

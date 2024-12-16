@@ -58,6 +58,12 @@ const loginUser = async (req, res) => {
     }
 
     const response = await UserServices.loginUser(req.body);
+    const {refresh_token, ...newResponse} = response
+    //console.log('response', response);
+    res.cookie('refresh_token', refresh_token, {
+      httpOnly: true,
+      Secure: true,
+    })
     return res.status(200).json(response);
   } catch (e) {
     return res.status(404).json({
@@ -146,9 +152,9 @@ const getDetailsUser = async (req, res) => {
 //cấp token mới
 const refreshToken = async (req, res) => {
   try {
-    const token = req.headers.token?.split(" ")[1];
+    const token = req.cookies.refresh_token
 
-    if (!userId) {
+    if (!token) {
       return res.status(200).json({
         status: "ERR",
         message: "The token is required",
