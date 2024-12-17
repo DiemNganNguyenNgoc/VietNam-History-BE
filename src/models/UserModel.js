@@ -2,12 +2,12 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
   {
-    email: { type: String, required: true, unique: true },
     name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     phone: { type: String, required: true },
+    birthday: { type: Date, required: true },
     img: { type: String, default: "" }, // Mặc định là chuỗi rỗng
-    birthday: { type: Date, default: null }, // Mặc định là null
     note: { type: String, default: "" }, // Mặc định là chuỗi rỗng
     facebookLink: { type: String, default: "" },
     githubLink: { type: String, default: "" },

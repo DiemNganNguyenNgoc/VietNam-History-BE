@@ -5,10 +5,10 @@ const validator = require("validator");
 //tạo tài khoản
 const createUser = async (req, res) => {
   try {
-    const { name, email, password, confirmPassword, phone } = req.body;
+    const { name, email, password, confirmPassword, phone, birthday } = req.body;
     const reg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; //check email
     const isCheckEmail = reg.test(email);
-    if (!name || !email || !password || !confirmPassword || !phone) {
+    if (!name || !email || !password || !confirmPassword || !phone || !birthday) {
       return res.status(200).json({
         status: "ERR",
         message: "The input is required",
@@ -62,7 +62,8 @@ const loginUser = async (req, res) => {
     //console.log('response', response);
     res.cookie('refresh_token', refresh_token, {
       httpOnly: true,
-      Secure: true,
+      secure: false,
+      samesite: 'strict'
     })
     return res.status(200).json(response);
   } catch (e) {
@@ -170,6 +171,20 @@ const refreshToken = async (req, res) => {
   }
 };
 
+const logoutUser = async (req, res) => {
+  try {
+    res.clearCookie('refresh_token')
+    return res.status(200).json({
+      status: 'OK',
+      message: 'Logout Successfully'
+    });
+  } catch (e) {
+    return res.status(404).json({
+      message: e,
+    });
+  }
+};
+
 //view follower
 const viewFollower = async (req, res) => {
   try {
@@ -242,6 +257,7 @@ module.exports = {
   deleteUser,
   getAllUser,
   getDetailsUser,
+  logoutUser,
   viewFollower,
   refreshToken,
   addFollower,

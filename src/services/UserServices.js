@@ -5,7 +5,7 @@ const { generalAccessToken, generalRefreshToken } = require("./JwtService");
 //tạo user
 const createUser = (newUser) => {
   return new Promise(async (resolve, reject) => {
-    const { name, email, password, confirmPassword, phone } = newUser;
+    const { name, email, password, confirmPassword, phone, birthday } = newUser;
     try {
       //check email created
       const checkUser = await User.findOne({
@@ -14,7 +14,7 @@ const createUser = (newUser) => {
       //nếu email đã tồn tại
       if (checkUser !== null) {
         resolve({
-          status: "OK",
+          status: "ERR",
           message: "The email is already",
         });
       }
@@ -28,6 +28,7 @@ const createUser = (newUser) => {
         password: hash,
         confirmPassword: hash,
         phone,
+        birthday,
       });
       if (createdUser) {
         resolve({
