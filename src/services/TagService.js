@@ -2,7 +2,7 @@ const Tag = require('../models/TagModel');
 
 const createTag = (newTag) => {
     return new Promise(async (resolve, reject) => {
-        const { name, description } = newTag;
+        const { name, description, userTag } = newTag;
         try {
             const checkTag = await Tag.findOne({ name: name });
             if (checkTag !== null) {
@@ -11,7 +11,7 @@ const createTag = (newTag) => {
                     message: 'The tag name is already taken'
                 });
             }
-            const createdTag = await Tag.create({ name, description });
+            const createdTag = await Tag.create({ name, description, userTag });
             if (createdTag) {
                 resolve({
                     status: 'OK',

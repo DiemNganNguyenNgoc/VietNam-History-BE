@@ -1,39 +1,24 @@
 const Question = require("../models/QuestionModel");
 
-//tạo Question
+// Tạo câu hỏi mới
 const createQuestion = (newQuestion) => {
   return new Promise(async (resolve, reject) => {
-    const { title, content, upVoteCount, downVoteCount, answerCount, view, reportCount, active, user } =
-      newQuestion;
+    const { title, content, note, userQues, images, tags } = newQuestion;
 
     try {
-      //check tên sản phẩm
-      const checkQuestion = await Question.findOne({
-        content: content,
-      });
-      //nếu name Question đã tồn tại
-      if (checkQuestion !== null) {
-        resolve({
-          status: "OK",
-          message: "The name of Question is already",
-        });
-      }
-
       const createdQuestion = await Question.create({
-        title, 
-        content, 
-        upVoteCount, 
-        downVoteCount, 
-        answerCount, 
-        view, 
-        reportCount, 
-        active, 
-        user 
+        title,
+        content,
+        note,
+        userQues,
+        images,  
+        tags,   
       });
+
       if (createdQuestion) {
-        resolve({
-          status: "OK",
-          message: "SUCCESS",
+        return resolve({
+          status: 'OK',
+          message: 'Question created successfully',
           data: createdQuestion,
         });
       }
@@ -43,28 +28,23 @@ const createQuestion = (newQuestion) => {
   });
 };
 
-//update Question
+// Cập nhật câu hỏi
 const updateQuestion = (id, data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      //check name created
-      const checkQuestion = await Question.findOne({
-        _id: id,
-      });
-      //console.log("checkUser", checkUser);
+      // Kiểm tra xem câu hỏi có tồn tại hay không
+      const checkQuestion = await Question.findOne({ _id: id });
 
-      //nếu Question ko tồn tại
       if (checkQuestion === null) {
         resolve({
           status: "OK",
           message: "The Question is not defined",
         });
+        return;
       }
 
-      const updatedQuestion = await Question.findByIdAndUpdate(id, data, {
-        new: true,
-      });
-      //console.log("updatedQuestion", updatedQuestion);
+      // Cập nhật câu hỏi
+      const updatedQuestion = await Question.findByIdAndUpdate(id, data, { new: true });
       resolve({
         status: "OK",
         message: "SUCCESS",
@@ -76,26 +56,23 @@ const updateQuestion = (id, data) => {
   });
 };
 
-//delete Question
+// Xóa câu hỏi
 const deleteQuestion = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      //check Question created
-      const checkQuestion = await Question.findOne({
-        _id: id,
-      });
-      //console.log("checkQuestion", checkQuestion);
+      // Kiểm tra xem câu hỏi có tồn tại hay không
+      const checkQuestion = await Question.findOne({ _id: id });
 
-      //nếu Question ko tồn tại
       if (checkQuestion === null) {
         resolve({
           status: "OK",
           message: "The Question is not defined",
         });
+        return;
       }
 
+      // Xóa câu hỏi
       await Question.findByIdAndDelete(id);
-      //console.log("updatedQuestion", updatedQuestion);
       resolve({
         status: "OK",
         message: "DELETE Question IS SUCCESS",
@@ -106,27 +83,24 @@ const deleteQuestion = (id) => {
   });
 };
 
-//get details Question
+// Lấy chi tiết câu hỏi
 const getDetailsQuestion = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      //check email created
-      const Question = await Question.findOne({
-        _id: id,
-      });
+      const question = await Question.findOne({ _id: id });
 
-      //nếu Question ko tồn tại
-      if (Question === null) {
+      if (question === null) {
         resolve({
           status: "OK",
           message: "The Question is not defined",
         });
+        return;
       }
 
       resolve({
         status: "OK",
         message: "SUCCESS",
-        data: Question,
+        data: question,
       });
     } catch (e) {
       reject(e);
@@ -134,15 +108,17 @@ const getDetailsQuestion = (id) => {
   });
 };
 
-//get all Question
+// Lấy tất cả câu hỏi
 const getAllQuestion = (limit, page, sort, filter) => {
   return new Promise(async (resolve, reject) => {
     try {
       const totalQuestion = await Question.countDocuments();
-      
-      if(filter){
+
+      if (filter) {
         const label = filter[0];
-        const allQuestionFilter = await Question.find({ [label]: {'$regex': filter[1] } }).limit(limit).skip(page * limit) //filter gần đúng
+        const allQuestionFilter = await Question.find({ [label]: { '$regex': filter[1] } })
+          .limit(limit)
+          .skip(page * limit);
         resolve({
           status: "OK",
           message: "Get all Question IS SUCCESS",
@@ -151,13 +127,16 @@ const getAllQuestion = (limit, page, sort, filter) => {
           pageCurrent: Number(page + 1),
           totalPage: Math.ceil(totalQuestion / limit),
         });
+        return;
       }
 
-      if(sort){
+      if (sort) {
         const objectSort = {};
         objectSort[sort[1]] = sort[0];
-        //console.log('objectSort', objectSort)
-        const allQuestionSort = await Question.find().limit(limit).skip(page * limit).sort(objectSort);
+        const allQuestionSort = await Question.find()
+          .limit(limit)
+          .skip(page * limit)
+          .sort(objectSort);
         resolve({
           status: "OK",
           message: "Get all Question IS SUCCESS",
@@ -166,6 +145,7 @@ const getAllQuestion = (limit, page, sort, filter) => {
           pageCurrent: Number(page + 1),
           totalPage: Math.ceil(totalQuestion / limit),
         });
+        return;
       }
 
       const allQuestion = await Question.find().limit(limit).skip(page * limit);

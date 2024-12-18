@@ -7,12 +7,11 @@ const tagSchema = new mongoose.Schema(
         description: {type: String, required: true},
         usedCount: {type: Number, default: 0}, //đếm lượt đã sử dụng
 
-        //khóa ngoại
-        // user: {
-        //     type: mongoose.Schema.Types.Objectid, 
-        //     ref: 'User',
-        //     require: true
-        // },
+        userTag: {
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: 'User',
+            require: true
+        },
     },
     {
         timestamps: true,
