@@ -9,7 +9,7 @@ router.post("/log-out", userController.logoutUser);
 router.put("/update-user/:id", userController.updateUser);
 router.delete("/delete-user/:id", authMiddleware, userController.deleteUser); //xoá user
 router.get("/getAll", authMiddleware, userController.getAllUser); //lấy info user cho admin
-router.get("/get-details/:id", authUserMiddleware, userController.getDetailsUser); //lấy info user cho user
+router.get("/get-details/:id", userController.getDetailsUser); //lấy info user cho user
 router.post("/refresh-token", userController.refreshToken); //cấp access token mới sau khi token cũ hết hạn dựa vào refresh token
 router.get("/view-follower/:id", userController.viewFollower);
 router.post("/add-follower/:id", userController.addFollower);

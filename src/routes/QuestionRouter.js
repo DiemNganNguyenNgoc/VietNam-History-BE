@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const questionController = require("../controllers/QuestionController.js");
+const questionController = require("../controllers/QuestionController");
 const { authMiddleware } = require("../middleware/authMiddleware");
 
 // Tạo bản lưu mới
@@ -16,7 +16,7 @@ router.delete("/delete-question/:id", questionController.deleteQuestion);
 router.get("/get-detail-question/:id",  questionController.getDetailsQuestion);
 
 // Lấy tất cả bản lưu của một bài viết
-router.get("/get-all-question/:postId",  questionController.getAllQuestion);
+router.get("/get-all-question",  questionController.getAllQuestion);
 
 
 module.exports = router;

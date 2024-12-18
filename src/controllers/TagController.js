@@ -2,12 +2,12 @@ const TagService = require('../services/TagService');
 
 const createTag = async (req, res) => {
     try {
-        const { name, description } = req.body;
+        const { name, description, userTag } = req.body;
 
         console.log('req.body', req.body);
 
         // Kiểm tra trường nào bị thiếu
-        if (!name|| !description) {
+        if (!name|| !description ||!userTag) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'The input is required'

@@ -15,6 +15,10 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(cookieParser());
 
+// Cấu hình giới hạn tải lên (ví dụ: 50MB)
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
 app.get("/", (req, res) => {
   res.send("Hello worldvgchch");
 });
