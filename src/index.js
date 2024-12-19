@@ -18,8 +18,6 @@ app.use(
   })
 );
 app.use(bodyParser.json());
-app.use(express.json({ limit: "100mb" }));
-app.use(express.urlencoded({ limit: "100mb", extended: true }));
 app.use(cookieParser());
 
 // Cấu hình giới hạn tải lên (ví dụ: 50MB)
