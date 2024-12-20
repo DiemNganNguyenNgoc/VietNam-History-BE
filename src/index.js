@@ -11,7 +11,12 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3001;
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000", // URL của frontend
+    credentials: true, // cho phép gửi cookie
+  })
+);
 app.use(bodyParser.json());
 app.use(cookieParser());
 
