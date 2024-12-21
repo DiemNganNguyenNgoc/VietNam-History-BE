@@ -72,4 +72,33 @@ const getAllTag = async (req, res) => {
         });
     }
 };
-module.exports = { createTag, updateTag, deleteTag, getAllTag };
+const getDetailsTag = async (req, res) => {
+  try {
+    const tagId = req.params.id;
+    // console.log("tagId", tagId);
+    
+    if (!tagId) {
+      return res.status(400).json({
+        status: "ERR",
+        message: "Tag ID is required",
+      });
+    }
+
+    const response = await TagService.getDetailsTag(tagId);
+    if (!response) {
+      return res.status(404).json({
+        status: "ERR",
+        message: "Tag not found",
+      });
+    }
+
+    return res.status(200).json(response);
+  } catch (e) {
+    console.error("Error fetching question details: ", e);
+    return res.status(500).json({
+      status: "ERR",
+      message: "An error occurred while fetching the question details.",
+    });
+  }
+};
+module.exports = { createTag, updateTag, deleteTag, getAllTag, getDetailsTag };
