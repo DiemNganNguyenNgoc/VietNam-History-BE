@@ -69,20 +69,19 @@ const deleteTag = (id) => {
   });
 };
 
-const getAllTag = () => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const allTag = await Tag.find();
-      resolve({
-        status: "OK",
-        message: "Success",
-        data: allTag,
-      });
-    } catch (e) {
-      reject(e);
-    }
-  });
+const getAllTag = async (userTag) => {
+  try {
+      // Nếu có userId, lọc các tag theo userId
+      const filter = userTag ? { userTag: userTag } : {};
+
+      const tags = await Tag.find(filter); 
+
+      return tags;
+  } catch (e) {
+      throw new Error("Error fetching tags: " + e.message);
+  }
 };
+
 
 const getDetailsTag = (id) => {
   return new Promise(async (resolve, reject) => {

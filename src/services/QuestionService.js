@@ -109,31 +109,25 @@ const getDetailsQuestion = (id) => {
 };
 
 // Lấy tất cả câu hỏi
-const getAllQuestion = (limit, page, sort, filter) => {
+const getAllQuestion = (limit, page, sort, filter, tag) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const totalQuestion = await Question.countDocuments();
+      let query = {}; 
+      if (tag) {
+        query.tags = tag;
+      }
 
       if (filter) {
         const label = filter[0];
-        const allQuestionFilter = await Question.find({ [label]: { '$regex': filter[1] } })
-          .limit(limit)
-          .skip(page * limit);
-        resolve({
-          status: "OK",
-          message: "Get all Question IS SUCCESS",
-          data: allQuestionFilter,
-          total: totalQuestion,
-          pageCurrent: Number(page + 1),
-          totalPage: Math.ceil(totalQuestion / limit),
-        });
-        return;
+        query[label] = { '$regex': filter[1] }; 
       }
+
+      const totalQuestion = await Question.countDocuments(query);
 
       if (sort) {
         const objectSort = {};
-        objectSort[sort[1]] = sort[0];
-        const allQuestionSort = await Question.find()
+        objectSort[sort[1]] = sort[0]; 
+        const allQuestionSort = await Question.find(query)
           .limit(limit)
           .skip(page * limit)
           .sort(objectSort);
@@ -148,7 +142,7 @@ const getAllQuestion = (limit, page, sort, filter) => {
         return;
       }
 
-      const allQuestion = await Question.find().limit(limit).skip(page * limit);
+      const allQuestion = await Question.find(query).limit(limit).skip(page * limit);
       resolve({
         status: "OK",
         message: "Get all Question IS SUCCESS",
@@ -162,6 +156,7 @@ const getAllQuestion = (limit, page, sort, filter) => {
     }
   });
 };
+
 
 module.exports = {
   createQuestion,

@@ -64,7 +64,10 @@ const deleteTag = async (req, res) => {
 
 const getAllTag = async (req, res) => {
     try {
-        const response = await TagService.getAllTag();
+        const { userTag } = req.query; 
+
+        const response = await TagService.getAllTag(userTag); 
+
         return res.status(200).json(response);
     } catch (e) {
         return res.status(404).json({
@@ -72,6 +75,8 @@ const getAllTag = async (req, res) => {
         });
     }
 };
+
+
 const getDetailsTag = async (req, res) => {
   try {
     const tagId = req.params.id;

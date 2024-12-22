@@ -134,13 +134,16 @@ const getDetailsQuestion = async (req, res) => {
 // Get All Questions
 const getAllQuestion = async (req, res) => {
   try {
-    const { limit, page, sort, filter } = req.query;
+    const { limit, page, sort, filter, tag } = req.query;  
+
     const response = await QuestionService.getAllQuestion(
-      Number(limit) || 8,
-      Number(page) || 0,
-      sort,
-      filter
+      Number(limit) || 8,      
+      Number(page) || 0,       
+      sort,                    
+      filter,                 
+      tag                     
     );
+
     return res.status(200).json(response);
   } catch (e) {
     console.error("Error fetching questions: ", e);
@@ -150,6 +153,7 @@ const getAllQuestion = async (req, res) => {
     });
   }
 };
+
 
 module.exports = {
   createQuestion,
