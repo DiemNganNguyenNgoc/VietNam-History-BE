@@ -41,6 +41,19 @@ const userSchema = new mongoose.Schema(
       default: "",
       required: false,
     },
+
+    followers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User", // Liên kết đến User khác
+      },
+    ], // Danh sách ID của người theo dõi
+    following: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User", // Liên kết đến User khác
+      },
+    ], // Danh sách ID của người mà user đang theo dõi
   },
   {
     timestamps: true,

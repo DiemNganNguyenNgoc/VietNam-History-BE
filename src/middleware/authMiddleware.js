@@ -41,8 +41,8 @@ const authUserMiddleware = (req, res, next) => {
     }
 
     //nếu có user isAdmin
-    if (user?.isAdmin || user?.id === userId)//=== thì cho đi tiếp 
-    {
+    if (user?.isAdmin || user?.id === userId) {
+      //=== thì cho đi tiếp
       console.log("true");
       next();
     } else {
@@ -54,7 +54,24 @@ const authUserMiddleware = (req, res, next) => {
   });
 };
 
+const verifyToken = (req, res, next) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Lấy token từ header
+
+  if (!token) {
+    return res.status(401).json({ status: "ERR", message: "Unauthorized" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Giải mã token
+    req.user = decoded; // Lưu thông tin user vào req
+    next();
+  } catch (error) {
+    res.status(401).json({ status: "ERR", message: "Invalid token" });
+  }
+};
+
 module.exports = {
   authMiddleware,
   authUserMiddleware,
+  verifyToken,
 };

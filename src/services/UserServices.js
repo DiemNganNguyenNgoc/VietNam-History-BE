@@ -46,7 +46,7 @@ const createUser = (newUser) => {
 //log in user
 const loginUser = (userLogin) => {
   return new Promise(async (resolve, reject) => {
-    const { email, password} = userLogin;
+    const { email, password } = userLogin;
     try {
       //check email created
       const checkUser = await User.findOne({
@@ -176,6 +176,18 @@ const getAllUser = (limit = 4, page = 0) => {
   });
 };
 
+const getAllUsersExceptSelf = async (currentUserId) => {
+  try {
+    // Lọc người dùng trừ bản thân
+    const users = await User.find({ _id: { $ne: currentUserId } })
+      .select("name img address followerCount") // Chỉ lấy các trường cần thiết
+      .lean(); // Chuyển đổi sang đối tượng JS
+    return users;
+  } catch (error) {
+    throw new Error("Unable to fetch users: " + error.message);
+  }
+};
+
 //get details user
 const getDetailsUser = (id) => {
   return new Promise(async (resolve, reject) => {
@@ -233,7 +245,6 @@ const viewFollower = (id) => {
 
 //add follower
 const addFollower = async (currentUserId, userIdToFollow) => {
-  // Kiểm tra người dùng có tồn tại không
   const userToFollow = await User.findById(userIdToFollow);
   if (!userToFollow) {
     throw new Error("User to follow does not exist.");
@@ -244,22 +255,23 @@ const addFollower = async (currentUserId, userIdToFollow) => {
     throw new Error("Current user does not exist.");
   }
 
-  // Kiểm tra xem đã follow chưa
   if (userToFollow.followers.includes(currentUserId)) {
     throw new Error("You are already following this user.");
   }
 
   // Thêm follower
   userToFollow.followers.push(currentUserId);
+  userToFollow.followerCount += 1; // Tăng số lượng follower
   await userToFollow.save();
 
   // Thêm vào danh sách following của currentUser
   currentUser.following.push(userIdToFollow);
+  currentUser.followingCount += 1; // Tăng số lượng following
   await currentUser.save();
 
   return {
-    following: currentUser.following,
-    followers: userToFollow.followers,
+    currentUserFollowingCount: currentUser.followingCount,
+    userToFollowFollowerCount: userToFollow.followerCount,
   };
 };
 
@@ -274,4 +286,5 @@ module.exports = {
   getDetailsUser,
   viewFollower,
   addFollower,
+  getAllUsersExceptSelf,
 };

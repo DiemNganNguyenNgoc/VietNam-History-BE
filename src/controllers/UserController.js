@@ -5,10 +5,18 @@ const validator = require("validator");
 //tạo tài khoản
 const createUser = async (req, res) => {
   try {
-    const { name, email, password, confirmPassword, phone, birthday } = req.body;
+    const { name, email, password, confirmPassword, phone, birthday } =
+      req.body;
     const reg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; //check email
     const isCheckEmail = reg.test(email);
-    if (!name || !email || !password || !confirmPassword || !phone || !birthday) {
+    if (
+      !name ||
+      !email ||
+      !password ||
+      !confirmPassword ||
+      !phone ||
+      !birthday
+    ) {
       return res.status(200).json({
         status: "ERR",
         message: "The input is required",
@@ -40,7 +48,7 @@ const loginUser = async (req, res) => {
     console.log(req.body);
     //test input data
     const { email, password } = req.body;
-    console.log('reg.body');
+    console.log("reg.body");
     const reg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; //check email
     const isCheckEmail = reg.test(email);
     console.log(email, password);
@@ -58,13 +66,13 @@ const loginUser = async (req, res) => {
     }
 
     const response = await UserServices.loginUser(req.body);
-    const {refresh_token, ...newResponse} = response
+    const { refresh_token, ...newResponse } = response;
     //console.log('response', response);
-    res.cookie('refresh_token', refresh_token, {
+    res.cookie("refresh_token", refresh_token, {
       httpOnly: true,
       secure: false,
-      samesite: 'strict'
-    })
+      samesite: "strict",
+    });
     return res.status(200).json(response);
   } catch (e) {
     return res.status(404).json({
@@ -129,6 +137,19 @@ const getAllUser = async (req, res) => {
   }
 };
 
+//get all except self
+
+const getAllUsersExceptSelf = async (req, res) => {
+  try {
+    const currentUserId = req.user.id; // Lấy ID của người đang đăng nhập từ token
+    // clg("currentUserId", currentUserId);
+    const users = await UserServices.getAllUsersExceptSelf(currentUserId); // Gọi Service để lấy dữ liệu
+    res.status(200).json({ status: "OK", data: users });
+  } catch (error) {
+    res.status(500).json({ status: "ERR", message: error.message });
+  }
+};
+
 //get detail user
 const getDetailsUser = async (req, res) => {
   try {
@@ -153,7 +174,7 @@ const getDetailsUser = async (req, res) => {
 //cấp token mới
 const refreshToken = async (req, res) => {
   try {
-    const token = req.cookies.refresh_token
+    const token = req.cookies.refresh_token;
 
     if (!token) {
       return res.status(200).json({
@@ -173,10 +194,10 @@ const refreshToken = async (req, res) => {
 
 const logoutUser = async (req, res) => {
   try {
-    res.clearCookie('refresh_token')
+    res.clearCookie("refresh_token");
     return res.status(200).json({
-      status: 'OK',
-      message: 'Logout Successfully'
+      status: "OK",
+      message: "Logout Successfully",
     });
   } catch (e) {
     return res.status(404).json({
@@ -217,10 +238,9 @@ const viewFollower = async (req, res) => {
 //add follower
 const addFollower = async (req, res) => {
   try {
-    const userIdToFollow = req.params.id; // ID của user sẽ được follow
-    const currentUserId = req.user.id; // ID của người gửi request (lấy từ token)
+    const userIdToFollow = req.params.id;
+    const currentUserId = req.user.id;
 
-    // Kiểm tra xem ID có hợp lệ không
     if (!userIdToFollow || !currentUserId) {
       return res.status(400).json({
         status: "ERR",
@@ -235,12 +255,18 @@ const addFollower = async (req, res) => {
       });
     }
 
-    // Thêm follower qua service
-    const response = await UserServices.addFollower(currentUserId, userIdToFollow);
+    const response = await UserServices.addFollower(
+      currentUserId,
+      userIdToFollow
+    );
+
     return res.status(200).json({
       status: "OK",
       message: "Successfully followed the user.",
-      data: response,
+      data: {
+        followingCount: response.currentUserFollowingCount,
+        followerCount: response.userToFollowFollowerCount,
+      },
     });
   } catch (error) {
     return res.status(500).json({
@@ -261,4 +287,5 @@ module.exports = {
   viewFollower,
   refreshToken,
   addFollower,
+  getAllUsersExceptSelf,
 };
