@@ -151,10 +151,48 @@ const getAllQuestion = async (req, res) => {
   }
 };
 
+// Get Questions by User ID
+const getQuestionsByUserId = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { limit, page } = req.query;
+
+    if (!userId) {
+      return res.status(400).json({
+        status: "ERR",
+        message: "User ID is required",
+      });
+    }
+
+    const response = await QuestionService.getQuestionsByUserId(
+      userId,
+      Number(limit) || 10,
+      Number(page) || 0
+    );
+
+    if (!response || response.length === 0) {
+      return res.status(404).json({
+        status: "ERR",
+        message: "No questions found for the given user ID",
+      });
+    }
+
+    return res.status(200).json(response);
+  } catch (e) {
+    console.error("Error fetching questions by user ID: ", e);
+    return res.status(500).json({
+      status: "ERR",
+      message: "An error occurred while fetching the questions by user ID.",
+      error: e.message,
+    });
+  }
+};
+
 module.exports = {
   createQuestion,
   updateQuestion,
   deleteQuestion,
   getDetailsQuestion,
   getAllQuestion,
+  getQuestionsByUserId,
 };
