@@ -157,6 +157,52 @@ const getAllQuestion = (limit, page, sort, filter, tag) => {
   });
 };
 
+// Lấy câu hỏi theo ID người dùng
+const getQuestionsByUserId = (userId, limit, page) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Kiểm tra xem userId có tồn tại hay không
+      if (!userId) {
+        resolve({
+          status: "FAIL",
+          message: "User ID is required",
+        });
+        return;
+      }
+
+      // Tính tổng số câu hỏi của người dùng
+      const totalQuestions = await Question.countDocuments({ userQues: userId });
+
+      // Lấy danh sách câu hỏi theo userId
+      const userQuestions = await Question.find({ userQues: userId })
+        .limit(limit)
+        .skip(page * limit)
+        .sort({ createdAt: -1 }); // Sắp xếp theo thời gian tạo giảm dần
+
+      // Kiểm tra kết quả
+      if (userQuestions.length === 0) {
+        resolve({
+          status: "OK",
+          message: "No questions found for this user",
+          data: [],
+        });
+        return;
+      }
+
+      // Trả về kết quả
+      resolve({
+        status: "OK",
+        message: "Questions retrieved successfully",
+        data: userQuestions,
+        total: totalQuestions,
+        pageCurrent: Number(page + 1),
+        totalPage: Math.ceil(totalQuestions / limit),
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
 
 module.exports = {
   createQuestion,
@@ -164,4 +210,5 @@ module.exports = {
   deleteQuestion,
   getDetailsQuestion,
   getAllQuestion,
+  getQuestionsByUserId,
 };

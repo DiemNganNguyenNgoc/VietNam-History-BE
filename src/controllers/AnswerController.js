@@ -6,27 +6,18 @@ const createAnswer = async (req, res) => {
     //test input data
     const {
       content,
-      upVoteCount,
-      downVoteCount,
-      commentCount,
-      view,
-      reportCount,
-      active,
-      user,
+     
+      userAns,
       question,
+      images
     } = req.body;
-    //console.log("req.body", req.body);
+    console.log("req.body", req.body);
 
     if (
       !content ||
-      upVoteCount ||
-      downVoteCount ||
-      commentCount ||
-      view ||
-      reportCount ||
-      active ||
-      user ||
-      question
+      
+      !userAns ||
+      !question
     ) {
       //check have
       return res.status(200).json({
@@ -36,10 +27,12 @@ const createAnswer = async (req, res) => {
     }
 
     const response = await AnswerService.createAnswer(req.body);
+    console.log("resPON", response)
     return res.status(200).json(response);
   } catch (e) {
     return res.status(404).json({
       message: e,
+    
     });
   }
 };

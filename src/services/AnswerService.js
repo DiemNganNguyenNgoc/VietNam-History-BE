@@ -5,14 +5,9 @@ const createAnswer = (newAnswer) => {
   return new Promise(async (resolve, reject) => {
     const {
       content,
-      upVoteCount,
-      downVoteCount,
-      commentCount,
-      view,
-      reportCount,
-      active,
-      user,
+      userAns,
       question,
+      images
     } = newAnswer;
 
     try {
@@ -30,14 +25,9 @@ const createAnswer = (newAnswer) => {
 
       const createdAnswer = await Answer.create({
         content,
-        upVoteCount,
-        downVoteCount,
-        commentCount,
-        view,
-        reportCount,
-        active,
-        user,
+        userAns,
         question,
+        images
       });
       if (createdAnswer) {
         resolve({
