@@ -18,5 +18,6 @@ router.get("/get-detail-question/:id",  questionController.getDetailsQuestion);
 // Lấy tất cả bản lưu của một bài viết
 router.get("/get-all-question",  questionController.getAllQuestion);
 
+router.get("/user/:userId",  questionController.getQuestionsByUserId);
 
 module.exports = router;

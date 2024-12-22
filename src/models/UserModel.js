@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema(
     followerCount: { type: Number, default: 0 }, // Mặc định là 0
     followingCount: { type: Number, default: 0 }, // Mặc định là 0
     savedCount: { type: Number, default: 0 }, // Mặc định là 0
-    score: { type: Number, default: 0 }, // Mặc định là 0
+    reputation: { type: Number, default: 0 }, // Mặc định là 0
     active: { type: Boolean, default: true }, // Mặc định là true
     isAdmin: { type: Boolean, default: false },
 
