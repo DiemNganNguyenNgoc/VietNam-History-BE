@@ -16,9 +16,11 @@ router.delete("/delete-answer/:id", answerController.deleteAnswer);
 router.get("/get-detail-answer/:id", answerController.getDetailsAnswer);
 
 // Lấy tất cả bản lưu của một bài viết
-router.get("/get-all-answer/:postId", answerController.getAllAnswer);
+//router.get("/get-all-answer/:postId", answerController.getAllAnswer);
 
 // Xem câu hỏi của một câu trả lời
-router.get("/answers/:questionId", answerController.getQuestionByAnswer);
+router.get("/answers/:id", answerController.getQuestionByAnswer);
+// Xem câu hỏi của một câu trả lời
+router.get("/answers/get-by-question/:id", answerController.getAnswersByQuestionId);
 
 module.exports = router;
