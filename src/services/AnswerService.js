@@ -191,6 +191,29 @@ const getAllAnswer = (limit, page, sort, filter) => {
   });
 };
 
+// Lấy tất cả câu trả lời theo ID câu hỏi
+const getAnswersByQuestionId = (questionId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const answers = await Answer.find({ question: questionId });
+      if (!answers || answers.length === 0) {
+        return resolve({
+          status: "OK",
+          message: "No answers found for this question.",
+        });
+      }
+
+      resolve({
+        status: "OK",
+        message: "SUCCESS",
+        data: answers,
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 const getQuestionByAnswer = async (answerId) => {
   try {
     const question = await Answer.findById(answerId);
@@ -209,4 +232,5 @@ module.exports = {
   getDetailsAnswer,
   getAllAnswer,
   getQuestionByAnswer,
+  getAnswersByQuestionId
 };
