@@ -1,6 +1,7 @@
 const Admin = require("../models/AdminModel");
 const bcrypt = require("bcrypt");
 const { generalAccessToken, generalRefreshToken } = require("./JwtService");
+const { verifyToken } = require("../middleware/authMiddleware");
 
 //tạo Admin
 const createAdmin = (newAdmin) => {
@@ -110,6 +111,8 @@ const loginAdmin = (adminLogin) => {
         isAdmin: checkAdmin.isAdmin,
       });
 
+      console.log("access_token", access_token);
+      ;
       resolve({
         status: "OK",
         message: "Login successful",
@@ -216,12 +219,12 @@ const getDetailsAdmin = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
       //check email created
-      const Admin = await Admin.findOne({
+      const admin = await Admin.findOne({
         _id: id,
       });
 
       //nếu Admin ko tồn tại
-      if (Admin === null) {
+      if (admin === null) {
         resolve({
           status: "OK",
           message: "The Admin is not defined",
@@ -231,7 +234,7 @@ const getDetailsAdmin = (id) => {
       resolve({
         status: "OK",
         message: "SUCCESS",
-        data: Admin,
+        data: admin,
       });
     } catch (e) {
       reject(e);
@@ -306,7 +309,7 @@ const toggleAdminStatus = (id) => {
 const refreshToken = (token) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const decoded = verifyRefreshToken(token);
+      const decoded = verifyToken(token);
 
       if (!decoded) {
         return resolve({

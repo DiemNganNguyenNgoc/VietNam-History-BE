@@ -9,7 +9,7 @@ const generalAccessToken = (payload) => {
       ...payload,
     },
     process.env.ACCESS_TOKEN,
-    { expiresIn: "30s" }
+    { expiresIn: "24h" }
   );
 
   return access_token;
@@ -39,7 +39,7 @@ const refreshTokenJwtService = (token) => {
             message: "The authentication",
           });
         }
-    
+
         const access_token = await generalAccessToken({
           id: user?.id,
           isAdmin: user?.isAdmin,

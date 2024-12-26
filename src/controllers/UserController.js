@@ -238,41 +238,18 @@ const viewFollower = async (req, res) => {
 //add follower
 const addFollower = async (req, res) => {
   try {
+    const currentUserId = req.user.id; // Lấy từ token đã xác thực
     const userIdToFollow = req.params.id;
-    const currentUserId = req.user.id;
 
-    if (!userIdToFollow || !currentUserId) {
-      return res.status(400).json({
-        status: "ERR",
-        message: "User ID is required.",
-      });
-    }
+    const response = await UserServices.addFollower(currentUserId, userIdToFollow);
 
-    if (userIdToFollow === currentUserId) {
-      return res.status(400).json({
-        status: "ERR",
-        message: "You cannot follow yourself.",
-      });
-    }
-
-    const response = await UserServices.addFollower(
-      currentUserId,
-      userIdToFollow
-    );
-
-    return res.status(200).json({
+    res.status(200).json({
       status: "OK",
-      message: "Successfully followed the user.",
-      data: {
-        followingCount: response.currentUserFollowingCount,
-        followerCount: response.userToFollowFollowerCount,
-      },
+      message: "Followed successfully",
+      data: response,
     });
   } catch (error) {
-    return res.status(500).json({
-      status: "ERR",
-      message: error.message,
-    });
+    res.status(500).json({ status: "ERR", message: error.message });
   }
 };
 

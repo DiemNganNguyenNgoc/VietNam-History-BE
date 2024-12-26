@@ -10,10 +10,10 @@ router.post("/sign-up", adminController.createAdmin);
 router.post("/log-in", adminController.loginAdmin);
 
 // Lấy thông tin chi tiết của admin
-router.get("/get-admin/:id", authUserMiddleware, adminController.getDetailsAdmin);
+router.get("/get-detail-admin/:id", authUserMiddleware, adminController.getDetailsAdmin);
 
 // Lấy danh sách tất cả admin (có phân trang)
-router.get("/get-all", authMiddleware, adminController.getAllAdmin);
+router.get("/get-all-admin", authMiddleware, adminController.getAllAdmin);
 
 // Cập nhật thông tin admin
 router.put("/update-admin/:id", authMiddleware, adminController.updateAdmin);

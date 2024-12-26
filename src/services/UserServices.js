@@ -246,33 +246,24 @@ const viewFollower = (id) => {
 //add follower
 const addFollower = async (currentUserId, userIdToFollow) => {
   const userToFollow = await User.findById(userIdToFollow);
-  if (!userToFollow) {
-    throw new Error("User to follow does not exist.");
-  }
+  if (!userToFollow) throw new Error("User to follow does not exist.");
 
   const currentUser = await User.findById(currentUserId);
-  if (!currentUser) {
-    throw new Error("Current user does not exist.");
-  }
+  if (!currentUser) throw new Error("Current user does not exist.");
 
+  // Kiểm tra nếu đã follow
   if (userToFollow.followers.includes(currentUserId)) {
     throw new Error("You are already following this user.");
   }
 
-  // Thêm follower
+  // Cập nhật danh sách followers và following
   userToFollow.followers.push(currentUserId);
-  userToFollow.followerCount += 1; // Tăng số lượng follower
-  await userToFollow.save();
-
-  // Thêm vào danh sách following của currentUser
   currentUser.following.push(userIdToFollow);
-  currentUser.followingCount += 1; // Tăng số lượng following
+
+  await userToFollow.save();
   await currentUser.save();
 
-  return {
-    currentUserFollowingCount: currentUser.followingCount,
-    userToFollowFollowerCount: userToFollow.followerCount,
-  };
+  return { userToFollow, currentUser };
 };
 
 //tạo access token dựa vào refresh token

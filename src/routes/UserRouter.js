@@ -12,7 +12,7 @@ router.get("/get-all-user", userController.getAllUser); //lấy info user cho ad
 router.get("/get-details/:id", userController.getDetailsUser); //lấy info user cho user
 router.post("/refresh-token", userController.refreshToken); //cấp access token mới sau khi token cũ hết hạn dựa vào refresh token
 router.get("/view-follower/:id", userController.viewFollower);
-router.post("/add-follower/:id", userController.addFollower);
+router.post("/add-follower/:id", verifyToken, userController.addFollower);
 // Route lấy danh sách tất cả người dùng trừ người dùng hiện tại
 router.get("/get-all-except-self", verifyToken, userController.getAllUsersExceptSelf);
 

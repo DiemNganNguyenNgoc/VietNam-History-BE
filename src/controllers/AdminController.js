@@ -89,6 +89,13 @@ const loginAdmin = async (req, res) => {
     }
 
     const response = await AdminService.loginAdmin(req.body);
+    const { refresh_token, ...newResponse } = response;
+    //console.log('response', response);
+    res.cookie("refresh_token", refresh_token, {
+      httpOnly: true,
+      secure: false,
+      samesite: "strict",
+    });
     return res.status(200).json(response);
   } catch (e) {
     return res.status(500).json({
@@ -125,6 +132,7 @@ const updateAdmin = async (req, res) => {
 const deleteAdmin = async (req, res) => {
   try {
     const adminId = req.params.id;
+    const token = req.headers;
 
     if (!adminId) {
       return res.status(400).json({
@@ -186,21 +194,20 @@ const getDetailsAdmin = async (req, res) => {
 // Refresh token
 const refreshToken = async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1];
+    const token = req.cookies.refresh_token;
 
     if (!token) {
-      return res.status(400).json({
+      return res.status(200).json({
         status: "ERR",
-        message: "Token is required.",
+        message: "The token is required",
       });
     }
 
-    const response = await JwtService.refreshToken(token);
+    const response = await JwtService.refreshTokenJwtService(token);
     return res.status(200).json(response);
   } catch (e) {
-    return res.status(500).json({
-      status: "ERR",
-      message: e.message,
+    return res.status(404).json({
+      message: e,
     });
   }
 };

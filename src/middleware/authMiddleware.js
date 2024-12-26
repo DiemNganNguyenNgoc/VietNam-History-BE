@@ -55,15 +55,13 @@ const authUserMiddleware = (req, res, next) => {
 };
 
 const verifyToken = (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1]; // Lấy token từ header
-
-  if (!token) {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token)
     return res.status(401).json({ status: "ERR", message: "Unauthorized" });
-  }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Giải mã token
-    req.user = decoded; // Lưu thông tin user vào req
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN);
+    req.user = decoded; // Lưu thông tin user
     next();
   } catch (error) {
     res.status(401).json({ status: "ERR", message: "Invalid token" });
