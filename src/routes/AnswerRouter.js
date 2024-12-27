@@ -21,6 +21,6 @@ router.get("/get-detail-answer/:id", answerController.getDetailsAnswer);
 // Xem câu hỏi của một câu trả lời
 router.get("/answers/:id", answerController.getQuestionByAnswer);
 // Xem câu hỏi của một câu trả lời
-router.get("/answers/get-by-question/:id", answerController.getAnswersByQuestionId);
+router.get("/get-by-question/:questionId", answerController.getAnswersByQuestionId);
 
 module.exports = router;

@@ -139,8 +139,10 @@ const getQuestionByAnswer = async (req, res) => {
 
 // Lấy tất cả câu trả lời theo ID câu hỏi
 const getAnswersByQuestionId = async (req, res) => {
+  console.log("req.params:", req.params);
+
   const { questionId } = req.params;
-  console.log("RES", res.body)
+  
   try {
     const answers = await AnswerService.getAnswersByQuestionId(questionId); // Gọi dịch vụ để lấy câu trả lời
     res.status(200).json({

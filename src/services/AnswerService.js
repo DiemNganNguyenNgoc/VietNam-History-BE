@@ -1,5 +1,5 @@
 const Answer = require("../models/AnswerModel");
-
+const mongoose = require("mongoose");
 //tạo Answer
 const createAnswer = (newAnswer) => {
   return new Promise(async (resolve, reject) => {
@@ -195,11 +195,23 @@ const getAllAnswer = (limit, page, sort, filter) => {
 const getAnswersByQuestionId = (questionId) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const answers = await Answer.find({ question: questionId });
+      // Kiểm tra và chuyển đổi questionId thành ObjectId
+      if (!mongoose.Types.ObjectId.isValid(questionId)) {
+        return resolve({
+          status: "ERR",
+          message: "Invalid questionId format.",
+        });
+      }
+
+      const answers = await Answer.find({
+        question:new mongoose.Types.ObjectId(questionId),
+      });
+
       if (!answers || answers.length === 0) {
         return resolve({
           status: "OK",
           message: "No answers found for this question.",
+          data: [],
         });
       }
 
