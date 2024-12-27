@@ -67,6 +67,49 @@ const updateQuestion = async (req, res) => {
   }
 };
 
+const updateAnswerCount = async (req, res) => {
+  try {
+    const questionId = req.params.id;
+    
+    // Lấy câu hỏi hiện tại từ cơ sở dữ liệu
+    const question = await QuestionService.findById(questionId);
+    if (!question) {
+      return res.status(404).json({
+        status: "ERR",
+        message: "Question not found",
+      });
+    }
+
+    // Tăng answerCount lên 1
+    const updatedAnswerCount = question.answerCount + 1;
+
+    // Cập nhật câu hỏi với answerCount mới và các trường dữ liệu khác (nếu cần)
+    const updatedQuestion = await QuestionService.findByIdAndUpdate(
+      questionId,
+      {
+        answerCount: updatedAnswerCount, // Cập nhật answerCount
+        ...req.body, // Cập nhật các trường khác (title, content, note, tags, images)
+      },
+      { new: true }  // Trả về câu hỏi đã cập nhật
+    );
+
+    return res.status(200).json({
+      status: "OK",
+      message: "Question updated successfully",
+      data: updatedQuestion,
+    });
+
+  } catch (e) {
+    console.error("Error updating question: ", e);
+    return res.status(500).json({
+      status: "ERR",
+      message: "An error occurred while updating the question.",
+    });
+  }
+};
+
+
+
 // Delete Question
 const deleteQuestion = async (req, res) => {
   try {
@@ -104,7 +147,7 @@ const deleteQuestion = async (req, res) => {
 const getDetailsQuestion = async (req, res) => {
   try {
     const questionId = req.params.id;
-    console.log("questionId", questionId);
+   // console.log("questionId", questionId);
     
     if (!questionId) {
       return res.status(400).json({
@@ -194,6 +237,7 @@ const getQuestionsByUserId = async (req, res) => {
 module.exports = {
   createQuestion,
   updateQuestion,
+  updateAnswerCount,
   deleteQuestion,
   getDetailsQuestion,
   getAllQuestion,

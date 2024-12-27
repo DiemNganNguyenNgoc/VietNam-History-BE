@@ -11,7 +11,7 @@ const createAnswer = async (req, res) => {
       question,
       images
     } = req.body;
-    console.log("req.body", req.body);
+    // console.log("req.body", req.body);
 
     if (
       !content ||
@@ -27,7 +27,7 @@ const createAnswer = async (req, res) => {
     }
 
     const response = await AnswerService.createAnswer(req.body);
-    console.log("resPON", response)
+    // console.log("resPON", response)
     return res.status(200).json(response);
   } catch (e) {
     return res.status(404).json({
@@ -139,7 +139,7 @@ const getQuestionByAnswer = async (req, res) => {
 
 // Lấy tất cả câu trả lời theo ID câu hỏi
 const getAnswersByQuestionId = async (req, res) => {
-  console.log("req.params:", req.params);
+  // console.log("req.params:", req.params);
 
   const { questionId } = req.params;
   

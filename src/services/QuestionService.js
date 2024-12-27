@@ -203,6 +203,28 @@ const getQuestionsByUserId = (userId, limit, page) => {
     }
   });
 };
+// tim ID cau hoi 
+const findById = async (id) => {
+  try {
+    const question = await Question.findById(id);  // Mongoose method to find by ID
+    return question;
+  } catch (error) {
+    throw new Error("Error finding question: " + error.message);
+  }
+};
+const findByIdAndUpdate = async (id, updateData) => {
+  try {
+    // Mongoose method to find by ID and update
+    const updatedQuestion = await Question.findByIdAndUpdate(id, updateData, {
+      new: true, // This ensures that the updated document is returned
+      runValidators: true, // This ensures that the update respects your model's validation rules
+    });
+
+    return updatedQuestion;
+  } catch (error) {
+    throw new Error("Error updating question: " + error.message);
+  }
+};
 
 module.exports = {
   createQuestion,
@@ -211,4 +233,6 @@ module.exports = {
   getDetailsQuestion,
   getAllQuestion,
   getQuestionsByUserId,
+  findById,
+  findByIdAndUpdate
 };
