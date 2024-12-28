@@ -22,7 +22,8 @@ router.get("/get-all-question",  questionController.getAllQuestion);
 
 router.get("/user/:userId",  questionController.getQuestionsByUserId);
 
-router.put("/toggle-active/:id",  questionController.toggleActiveQues);
+router.get("/answers/user/:userId", questionController.getQuestionsFromUserAnswers);
 
+router.put("/toggle-active/:id",  questionController.toggleActiveQues);
 
 module.exports = router;
