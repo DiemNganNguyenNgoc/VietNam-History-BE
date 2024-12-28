@@ -1,32 +1,30 @@
-const Comment = require("../models/commentModel");
+const Comment = require("../models/CommentModel");
 
-const createComment = async (data) => {
-  try {
-    const { content, user, answer } = data;
-
-    if (!content || !user || !answer) {
-      return {
-        status: "ERR",
-        message: "Content, user, and answer are required.",
-      };
-    }
-
-    const newComment = new Comment({
+const createComment = (newComment) => {
+  return new Promise(async (resolve, reject) => {
+    const {
       content,
       user,
-      answer,
-      active: true,
-    });
+      answer
+    } = newComment;
 
-    await newComment.save();
-    return {
-      status: "OK",
-      message: "Comment created successfully.",
-      data: newComment,
-    };
-  } catch (err) {
-    throw new Error(err.message);
-  }
+  try {
+  const createdComment = await Comment.create({
+    content,
+    user,
+    answer
+      });
+      if (createdComment) {
+        resolve({
+          status: "OK",
+          message: "SUCCESS",
+          data: createdComment,
+        });
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
 };
 
 const updateComment = async (id, data) => {

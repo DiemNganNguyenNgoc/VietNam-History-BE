@@ -2,12 +2,33 @@ const CommentService = require("../services/CommentService.js");
 
 const createComment = async (req, res) => {
   try {
+    //test input data
+    const {
+      content,
+      user,
+      answer,
+    } = req.body;
+    console.log("req.body", req.body);
+
+    if (
+      !content ||
+      !user ||
+      !answer
+    ) {
+      //check have
+      return res.status(200).json({
+        status: "ERR",
+        message: "The input is required",
+      });
+    }
+
     const response = await CommentService.createComment(req.body);
+    // console.log("resPON", response)
     return res.status(200).json(response);
-  } catch (err) {
-    return res.status(500).json({
-      status: "ERR",
-      message: err.message,
+  } catch (e) {
+    return res.status(404).json({
+      message: e,
+    
     });
   }
 };

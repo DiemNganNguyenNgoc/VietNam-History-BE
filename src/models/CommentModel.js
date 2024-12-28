@@ -4,20 +4,20 @@ const mongoose = require('mongoose');
 const commentSchema = new mongoose.Schema(
     {
         content: {type: String, required: true},
-        upVoteCount: {type: Number, required: true}, 
-        downVoteCount: {type: Number, required: true},
-        view: {type: Number, required: true}, 
-        reportCount: {type: Number, required: true},
-        active: {type: Boolean, required: true},
+        upVoteCount: {type: Number, default: 0 }, 
+        downVoteCount: {type: Number, default: 0 },
+        view: {type: Number, default: 0 }, 
+        reportCount: {type: Number, default: 0 },
+        active: {type: Boolean},
 
         //khóa ngoại
         user: {
-            type: mongoose.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.ObjectId, 
             ref: 'User',
             require: true
         },
         answer: {
-            type: mongoose.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.ObjectId, 
             ref: 'Answer',
             require: true
         },
