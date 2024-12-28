@@ -18,6 +18,8 @@ const userSchema = new mongoose.Schema(
     reputation: { type: Number, default: 0 }, // Mặc định là 0
     active: { type: Boolean, default: true }, // Mặc định là true
     isAdmin: { type: Boolean, default: false },
+    answerCount: { type: Number, default: 0 },
+    questionCount: { type: Number, default: 0 },
 
     // Khóa ngoại (có thể bỏ qua hoặc thêm giá trị mặc định)
     reputationType: {
