@@ -137,10 +137,33 @@ const getQuestionByAnswer = async (req, res) => {
   }
 };
 
-// Lấy tất cả câu trả lời theo ID câu hỏi
+// Lấy tất cả câu trả lời có active = true theo ID câu hỏi
 const getAnswersByQuestionId = async (req, res) => {
-  // console.log("req.params:", req.params);
+  const { questionId } = req.params;
 
+  try {
+    // Gọi dịch vụ để lấy câu trả lời với active = true
+    const answers = await AnswerService.getAnswersByQuestionId(questionId);
+
+    res.status(200).json({
+      status: "OK",
+      message: "Answers fetched successfully.",
+      data: answers,
+    });
+  } catch (error) {
+    console.error("Error fetching answers:", error);
+    res.status(500).json({
+      status: "ERR",
+      message: error.message,
+    });
+  }
+};
+
+
+// Lấy tất cả câu trả lời theo ID câu hỏi
+const getAnswersByQuestionIdAdmin = async (req, res) => {
+  // console.log("req.params:", req.params);
+ 
   const { questionId } = req.params;
   
   try {
@@ -159,6 +182,39 @@ const getAnswersByQuestionId = async (req, res) => {
   }
 };
 
+
+const toggleActiveAns = async (req, res) => {
+  const { id } = req.params; // Lấy id từ tham số route
+
+  // Kiểm tra xem id có tồn tại và hợp lệ không
+  if (!id) {
+    return res.status(400).json({
+      status: 'ERR',
+      message: 'ID is required.',
+    });
+  }
+
+  try {
+    const result = await AnswerService.toggleActiveAns(id);
+
+    // Kiểm tra nếu không tìm thấy đối tượng
+    if (!result || result.status === 'ERR') {
+      return res.status(404).json({
+        status: 'ERR',
+        message: 'Answer not found or could not be updated.',
+      });
+    }
+
+    res.status(200).json(result); // Trả về kết quả thành công
+  } catch (error) {
+    res.status(500).json({
+      status: 'ERR',
+      message: error.message || 'An unexpected error occurred.',
+    });
+  }
+};
+
+
 module.exports = {
   createAnswer,
   updateAnswer,
@@ -167,4 +223,6 @@ module.exports = {
   getAllAnswer,
   getQuestionByAnswer,
   getAnswersByQuestionId,
+  toggleActiveAns,
+  getAnswersByQuestionIdAdmin
 };
