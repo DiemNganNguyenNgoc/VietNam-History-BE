@@ -1,4 +1,5 @@
 const Question = require("../models/QuestionModel");
+const Answer = require("../models/AnswerModel");
 
 // Tạo câu hỏi mới
 const createQuestion = (newQuestion) => {
@@ -240,6 +241,80 @@ const findByIdAndUpdate = async (id, updateData) => {
   }
 };
 
+const toggleActiveQues = async (quesID) => {
+  try {
+    const ques = await Question.findById(quesID);
+    if (!ques) {
+      throw new Error("Question is not exist!");
+    }
+
+    ques.active = !ques.active; // Đảo ngược trạng thái active
+    await ques.save();
+
+    return {
+      status: "OK",
+      message: "Successful!",
+      ques,
+    };
+  } catch (error) {
+    throw new Error(error.message || "Have some error");
+  }
+};
+const getQuestionsFromUserAnswers = (userId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Kiểm tra xem userId có tồn tại hay không
+      if (!userId) {
+        resolve({
+          status: "FAIL",
+          message: "User ID is required",
+        });
+        return;
+      }
+
+      // Lấy tất cả ID của câu trả lời từ userId
+      const userAnswers = await Answer.find({ userAns: userId }); // userAns là trường chứa ID của người dùng
+      const questionIds = userAnswers.map((answer) => answer.question); // Lấy danh sách các questionId từ câu trả lời
+
+      // Nếu không có câu trả lời nào
+      if (questionIds.length === 0) {
+        resolve({
+          status: "OK",
+          message: "No answers found for this user",
+          data: [],
+        });
+        return;
+      }
+
+      // Lấy toàn bộ thông tin các câu hỏi dựa trên questionIds
+      const questions = await Question.find({ _id: { $in: questionIds } });
+
+      const result = questions.map((question) => {
+        const answer = userAnswers.find(
+          (answer) => answer.question.toString() === question._id.toString()
+        );
+        return {
+          ...question._doc,
+          updatedAt: answer ? answer.updatedAt : null, // Thêm thời gian cập nhật của câu trả lời
+        };
+      });
+
+      // Trả về kết quả
+      resolve({
+        status: "OK",
+        message: "Questions retrieved successfully from user answers",
+        data: result,
+      });
+    } catch (e) {
+      reject({
+        status: "FAIL",
+        message: "Error retrieving questions from user answers",
+        error: e.message,
+      });
+    }
+  });
+};
+
 module.exports = {
   createQuestion,
   updateQuestion,
@@ -249,4 +324,6 @@ module.exports = {
   getQuestionsByUserId,
   findById,
   findByIdAndUpdate,
+  toggleActiveQues,
+  getQuestionsFromUserAnswers,
 };

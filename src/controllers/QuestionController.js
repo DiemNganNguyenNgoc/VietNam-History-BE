@@ -1,3 +1,4 @@
+const Question = require("../models/QuestionModel");
 const QuestionService = require("../services/QuestionService");
 
 //create Question
@@ -231,6 +232,51 @@ const getQuestionsByUserId = async (req, res) => {
   }
 };
 
+// Get Questions from User Answers
+const getQuestionsFromUserAnswers = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!userId) {
+      return res.status(400).json({
+        status: "ERR",
+        message: "User ID is required",
+      });
+    }
+
+    // Gọi dịch vụ để lấy danh sách câu hỏi dựa trên câu trả lời của người dùng
+    const response = await QuestionService.getQuestionsFromUserAnswers(userId);
+
+    if (!response || response.length === 0) {
+      return res.status(404).json({
+        status: "ERR",
+        message: "No questions found for the user's answers",
+      });
+    }
+
+    return res.status(200).json(response);
+  } catch (e) {
+    console.error("Error fetching questions from user answers: ", e);
+    return res.status(500).json({
+      status: "ERR",
+      message: "An error occurred while fetching questions from user answers.",
+      error: e.message,
+    });
+  }
+};
+
+const toggleActiveQues = async (req, res) => {
+  const { id } = req.params; // Lấy id từ tham số route
+  try {
+      const result = await QuestionService.toggleActiveQues(id);
+      res.status(200).json(result);
+  } catch (error) {
+      res.status(400).json({
+          status: 'ERR',
+          message: error.message,
+      });
+  }
+};
 module.exports = {
   createQuestion,
   updateQuestion,
@@ -238,5 +284,6 @@ module.exports = {
   deleteQuestion,
   getDetailsQuestion,
   getAllQuestion,
-  getQuestionsByUserId,
+  getQuestionsByUserId, toggleActiveQues,
+  getQuestionsFromUserAnswers,
 };
