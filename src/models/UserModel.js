@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema(
     active: { type: Boolean, default: true }, // Mặc định là true
     isAdmin: { type: Boolean, default: false },
     answerCount: { type: Number, default: 0 },
-    questionCount: { type: Number, default: 0 },
+    quesCount: { type: Number, default: 0 },
 
     // Khóa ngoại (có thể bỏ qua hoặc thêm giá trị mặc định)
     reputationType: {
