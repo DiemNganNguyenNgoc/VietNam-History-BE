@@ -1,4 +1,5 @@
 const Tag = require("../models/TagModel");
+const Question = require("../models/QuestionModel");
 
 const createTag = (newTag) => {
   return new Promise(async (resolve, reject) => {
@@ -57,14 +58,27 @@ const deleteTag = (id) => {
           status: "OK",
           message: "The Tag is not defined",
         });
+        return;
       }
+
+      // Tìm tất cả các câu hỏi có chứa idTag và xóa idTag khỏi danh sách tags của chúng
+      await Question.updateMany(
+        { tags: id }, 
+        { $pull: { tags: id } } 
+      );
+
+      // Xóa Tag khỏi collection Tag
       await Tag.findByIdAndDelete(id);
+
       resolve({
         status: "OK",
         message: "Delete successfully",
       });
     } catch (e) {
-      reject(e);
+      reject({
+        status: "ERR",
+        message: "Error deleting tag: " + e.message,
+      });
     }
   });
 };

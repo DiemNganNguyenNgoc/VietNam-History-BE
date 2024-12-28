@@ -226,6 +226,26 @@ const findByIdAndUpdate = async (id, updateData) => {
   }
 };
 
+const toggleActiveQues = async (quesID) => {
+  try {
+      const ques = await Question.findById(quesID);
+      if (!ques) {
+          throw new Error('Question is not exist!');
+      }
+
+      ques.active = !ques.active; // Đảo ngược trạng thái active
+      await ques.save();
+
+      return {
+          status: 'OK',
+          message: 'Successful!',
+          ques,
+      };
+  } catch (error) {
+      throw new Error(error.message || 'Have some error');
+  }
+};
+
 module.exports = {
   createQuestion,
   updateQuestion,
@@ -234,5 +254,5 @@ module.exports = {
   getAllQuestion,
   getQuestionsByUserId,
   findById,
-  findByIdAndUpdate
+  findByIdAndUpdate,toggleActiveQues
 };

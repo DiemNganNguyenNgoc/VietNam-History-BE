@@ -1,3 +1,4 @@
+const Question = require("../models/QuestionModel");
 const QuestionService = require("../services/QuestionService");
 
 //create Question
@@ -234,6 +235,18 @@ const getQuestionsByUserId = async (req, res) => {
   }
 };
 
+const toggleActiveQues = async (req, res) => {
+  const { id } = req.params; // Lấy id từ tham số route
+  try {
+      const result = await QuestionService.toggleActiveQues(id);
+      res.status(200).json(result);
+  } catch (error) {
+      res.status(400).json({
+          status: 'ERR',
+          message: error.message,
+      });
+  }
+};
 module.exports = {
   createQuestion,
   updateQuestion,
@@ -241,5 +254,5 @@ module.exports = {
   deleteQuestion,
   getDetailsQuestion,
   getAllQuestion,
-  getQuestionsByUserId,
+  getQuestionsByUserId, toggleActiveQues
 };
