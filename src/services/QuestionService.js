@@ -1,4 +1,5 @@
 const Question = require("../models/QuestionModel");
+const Answer = require("../models/AnswerModel");
 
 // Tạo câu hỏi mới
 const createQuestion = (newQuestion) => {
@@ -11,14 +12,14 @@ const createQuestion = (newQuestion) => {
         content,
         note,
         userQues,
-        images,  
-        tags,   
+        images,
+        tags,
       });
 
       if (createdQuestion) {
         return resolve({
-          status: 'OK',
-          message: 'Question created successfully',
+          status: "OK",
+          message: "Question created successfully",
           data: createdQuestion,
         });
       }
@@ -32,26 +33,36 @@ const createQuestion = (newQuestion) => {
 const updateQuestion = (id, data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      // Kiểm tra xem câu hỏi có tồn tại hay không
-      const checkQuestion = await Question.findOne({ _id: id });
-
-      if (checkQuestion === null) {
+      // Kiểm tra xem câu hỏi có tồn tại
+      const checkQuestion = await Question.findById(id);
+      if (!checkQuestion) {
         resolve({
-          status: "OK",
-          message: "The Question is not defined",
+          status: "ERROR",
+          message: "The Question does not exist",
         });
         return;
       }
 
-      // Cập nhật câu hỏi
-      const updatedQuestion = await Question.findByIdAndUpdate(id, data, { new: true });
-      resolve({
+      // Tăng answerCount lên 1
+      // const updatedLikeCount = checkQuestion.upVoteCount + 1;
+
+      // Cập nhật câu hỏi với answerCount mới và các trường dữ liệu khác (nếu cần)
+      const updatedQuestion = await QuestionService.findByIdAndUpdate(
+        id,
+        {
+          // answerCount: updatedLikeCount, // Cập nhật answerCount
+          data, // Cập nhật các trường khác (title, content, note, tags, images)
+        },
+        { new: true } // Trả về câu hỏi đã cập nhật
+      );
+
+      return res.status(200).json({
         status: "OK",
-        message: "SUCCESS",
+        message: "Question updated successfully",
         data: updatedQuestion,
       });
-    } catch (e) {
-      reject(e);
+    } catch (error) {
+      reject(error);
     }
   });
 };
@@ -112,21 +123,21 @@ const getDetailsQuestion = (id) => {
 const getAllQuestion = (limit, page, sort, filter, tag) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let query = {}; 
+      let query = {};
       if (tag) {
         query.tags = tag;
       }
 
       if (filter) {
         const label = filter[0];
-        query[label] = { '$regex': filter[1] }; 
+        query[label] = { $regex: filter[1] };
       }
 
       const totalQuestion = await Question.countDocuments(query);
 
       if (sort) {
         const objectSort = {};
-        objectSort[sort[1]] = sort[0]; 
+        objectSort[sort[1]] = sort[0];
         const allQuestionSort = await Question.find(query)
           .limit(limit)
           .skip(page * limit)
@@ -142,7 +153,9 @@ const getAllQuestion = (limit, page, sort, filter, tag) => {
         return;
       }
 
-      const allQuestion = await Question.find(query).limit(limit).skip(page * limit);
+      const allQuestion = await Question.find(query)
+        .limit(limit)
+        .skip(page * limit);
       resolve({
         status: "OK",
         message: "Get all Question IS SUCCESS",
@@ -171,7 +184,9 @@ const getQuestionsByUserId = (userId, limit, page) => {
       }
 
       // Tính tổng số câu hỏi của người dùng
-      const totalQuestions = await Question.countDocuments({ userQues: userId });
+      const totalQuestions = await Question.countDocuments({
+        userQues: userId,
+      });
 
       // Lấy danh sách câu hỏi theo userId
       const userQuestions = await Question.find({ userQues: userId })
@@ -203,10 +218,10 @@ const getQuestionsByUserId = (userId, limit, page) => {
     }
   });
 };
-// tim ID cau hoi 
+// tim ID cau hoi
 const findById = async (id) => {
   try {
-    const question = await Question.findById(id);  // Mongoose method to find by ID
+    const question = await Question.findById(id); // Mongoose method to find by ID
     return question;
   } catch (error) {
     throw new Error("Error finding question: " + error.message);
@@ -228,22 +243,76 @@ const findByIdAndUpdate = async (id, updateData) => {
 
 const toggleActiveQues = async (quesID) => {
   try {
-      const ques = await Question.findById(quesID);
-      if (!ques) {
-          throw new Error('Question is not exist!');
+    const ques = await Question.findById(quesID);
+    if (!ques) {
+      throw new Error("Question is not exist!");
+    }
+
+    ques.active = !ques.active; // Đảo ngược trạng thái active
+    await ques.save();
+
+    return {
+      status: "OK",
+      message: "Successful!",
+      ques,
+    };
+  } catch (error) {
+    throw new Error(error.message || "Have some error");
+  }
+};
+const getQuestionsFromUserAnswers = (userId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Kiểm tra xem userId có tồn tại hay không
+      if (!userId) {
+        resolve({
+          status: "FAIL",
+          message: "User ID is required",
+        });
+        return;
       }
 
-      ques.active = !ques.active; // Đảo ngược trạng thái active
-      await ques.save();
+      // Lấy tất cả ID của câu trả lời từ userId
+      const userAnswers = await Answer.find({ userAns: userId }); // userAns là trường chứa ID của người dùng
+      const questionIds = userAnswers.map((answer) => answer.question); // Lấy danh sách các questionId từ câu trả lời
 
-      return {
-          status: 'OK',
-          message: 'Successful!',
-          ques,
-      };
-  } catch (error) {
-      throw new Error(error.message || 'Have some error');
-  }
+      // Nếu không có câu trả lời nào
+      if (questionIds.length === 0) {
+        resolve({
+          status: "OK",
+          message: "No answers found for this user",
+          data: [],
+        });
+        return;
+      }
+
+      // Lấy toàn bộ thông tin các câu hỏi dựa trên questionIds
+      const questions = await Question.find({ _id: { $in: questionIds } });
+
+      const result = questions.map((question) => {
+        const answer = userAnswers.find(
+          (answer) => answer.question.toString() === question._id.toString()
+        );
+        return {
+          ...question._doc,
+          updatedAt: answer ? answer.updatedAt : null, // Thêm thời gian cập nhật của câu trả lời
+        };
+      });
+
+      // Trả về kết quả
+      resolve({
+        status: "OK",
+        message: "Questions retrieved successfully from user answers",
+        data: result,
+      });
+    } catch (e) {
+      reject({
+        status: "FAIL",
+        message: "Error retrieving questions from user answers",
+        error: e.message,
+      });
+    }
+  });
 };
 
 module.exports = {
@@ -254,5 +323,7 @@ module.exports = {
   getAllQuestion,
   getQuestionsByUserId,
   findById,
-  findByIdAndUpdate,toggleActiveQues
+  findByIdAndUpdate,
+  toggleActiveQues,
+  getQuestionsFromUserAnswers,
 };

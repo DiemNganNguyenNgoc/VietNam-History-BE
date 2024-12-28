@@ -280,6 +280,20 @@ const updateQuesCount = async (userId) => {
   }
 };
 
+const updateAnswerCount = async (userId) => {
+  try {
+      const user = await User.findById(userId);
+      if (!user) {
+          return null;
+      }
+      user.answerCount = (user.answerCount || 0) + 1; // Nếu `quesCount` chưa được khởi tạo thì set về 0
+      await user.save();
+      return user;
+  } catch (error) {
+      throw error;
+  }
+};
+
 //tạo access token dựa vào refresh token
 
 module.exports = {
@@ -292,5 +306,6 @@ module.exports = {
   viewFollower,
   addFollower,
   getAllUsersExceptSelf,
-  updateQuesCount
+  updateQuesCount,
+  updateAnswerCount
 };
