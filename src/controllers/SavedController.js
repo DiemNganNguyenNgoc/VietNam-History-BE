@@ -1,4 +1,4 @@
-const SavedService = require("../services/SavedService.js");
+const SavedService = require("../services/SavedService");
 
 const createSaved = async (req, res) => {
   try {
@@ -7,7 +7,7 @@ const createSaved = async (req, res) => {
     if (!question || !user) {
       return res.status(400).json({
         status: "ERR",
-        message: "Name and description are required",
+        message: "question and user are required",
       });
     }
 

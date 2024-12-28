@@ -107,9 +107,6 @@ const updateAnswerCount = async (req, res) => {
     });
   }
 };
-
-
-
 // Delete Question
 const deleteQuestion = async (req, res) => {
   try {
@@ -147,8 +144,8 @@ const deleteQuestion = async (req, res) => {
 const getDetailsQuestion = async (req, res) => {
   try {
     const questionId = req.params.id;
-   // console.log("questionId", questionId);
-    
+    // console.log("questionId", questionId);
+
     if (!questionId) {
       return res.status(400).json({
         status: "ERR",
@@ -177,14 +174,14 @@ const getDetailsQuestion = async (req, res) => {
 // Get All Questions
 const getAllQuestion = async (req, res) => {
   try {
-    const { limit, page, sort, filter, tag } = req.query;  
+    const { limit, page, sort, filter, tag } = req.query;
 
     const response = await QuestionService.getAllQuestion(
-      Number(limit) || 8,      
-      Number(page) || 0,       
-      sort,                    
-      filter,                 
-      tag                     
+      Number(limit) || 8,
+      Number(page) || 0,
+      sort,
+      filter,
+      tag
     );
 
     return res.status(200).json(response);

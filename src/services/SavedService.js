@@ -1,4 +1,5 @@
 const Saved = require("../models/SavedModel");
+const Question = require("../models/QuestionModel");
 
 const createSaved = async (data) => {
   return new Promise(async (resolve, reject) => {
@@ -11,6 +12,21 @@ const createSaved = async (data) => {
           status: "ERR",
           message: "Question ID and User ID are required",
         });
+      }
+
+      const existingSaved = await Saved.findOne({ question, user });
+      if (existingSaved) {
+        return {
+          status: "ERR",
+          message: "This question has already been saved by the user",
+        };
+      }
+      
+      // Tăng số lượng like cho câu hỏi
+      const questionDoc = await Question.findById(question);
+      if (questionDoc) {
+        questionDoc.likes += 1; // Tăng số lượng like
+        await questionDoc.save();
       }
 
       // Tạo bản lưu mới
@@ -122,13 +138,13 @@ const getDetailSaved = async (savedID) => {
   });
 };
 
-const getAllSaved = async (postID) => {
+const getAllSaved = async (questionID) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!postID) {
+      if (!questionID) {
         return resolve({
           status: "ERR",
-          message: "Post ID is required",
+          message: "question ID is required",
         });
       }
 
