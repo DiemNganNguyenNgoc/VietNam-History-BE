@@ -237,6 +237,26 @@ const getQuestionByAnswer = async (answerId) => {
   }
 };
 
+const getStatisticByUser = async ({ userAns, year, month }) => {
+  try {
+    const startOfMonth = new Date(year, month - 1, 1); // Ngày đầu tháng
+    const endOfMonth = new Date(year, month, 0, 23, 59, 59); // Ngày cuối tháng
+
+    const answers = await Answer.find({
+      userAns: userAns,
+      createdAt: { $gte: startOfMonth, $lte: endOfMonth },
+    });
+
+    return {
+      status: "OK",
+      message: "Answers statistics retrieved successfully.",
+      data: answers,
+    };
+  } catch (err) {
+    throw new Error(err.message);
+  }
+};
+
 module.exports = {
   createAnswer,
   updateAnswer,
@@ -244,5 +264,6 @@ module.exports = {
   getDetailsAnswer,
   getAllAnswer,
   getQuestionByAnswer,
-  getAnswersByQuestionId
+  getAnswersByQuestionId,
+  getStatisticByUser
 };

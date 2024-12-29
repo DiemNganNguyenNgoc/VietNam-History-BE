@@ -116,6 +116,7 @@ const deleteQuestion = async (req, res) => {
   try {
     const questionId = req.params.id;
 
+    // Kiểm tra nếu ID câu hỏi không tồn tại
     if (!questionId) {
       return res.status(400).json({
         status: "ERR",
@@ -123,26 +124,30 @@ const deleteQuestion = async (req, res) => {
       });
     }
 
+    // Gọi service để xóa câu hỏi cùng các answer và comment liên quan
     const response = await QuestionService.deleteQuestion(questionId);
-    if (!response) {
-      return res.status(404).json({
-        status: "ERR",
-        message: "Question not found",
+    
+    if (response.status === "OK") {
+      return res.status(200).json({
+        status: "OK",
+        message: response.message,
       });
     }
 
-    return res.status(200).json({
-      status: "OK",
-      message: "Question deleted successfully",
+    return res.status(404).json({
+      status: "ERR",
+      message: "Question not found",
     });
+
   } catch (e) {
     console.error("Error deleting question: ", e);
     return res.status(500).json({
       status: "ERR",
-      message: "An error occurred while deleting the question.",
+      message: "An error occurred while deleting the question and associated data.",
     });
   }
 };
+
 
 // Get Details Question
 const getDetailsQuestion = async (req, res) => {
@@ -181,8 +186,8 @@ const getAllQuestion = async (req, res) => {
     const { limit, page, sort, filter, tag } = req.query;  
 
     const response = await QuestionService.getAllQuestion(
-      Number(limit) || 8,      
-      Number(page) || 0,       
+      Number(limit) ,      
+      Number(page) ,       
       sort,                    
       filter,                 
       tag                     
@@ -247,6 +252,27 @@ const toggleActiveQues = async (req, res) => {
       });
   }
 };
+
+const getStatisticByUser = async (req, res) => {
+  try {
+    const { userQues, year, month } = req.query;
+
+    if (!userQues || !year || !month) {
+      return res.status(400).json({
+        status: "ERR",
+        message: "Missing required query parameters: user, year, and month.",
+      });
+    }
+
+    const result = await QuestionService.getStatisticByUser({ userQues, year, month });
+    return res.status(200).json(result);
+  } catch (err) {
+    return res.status(500).json({
+      status: "ERR",
+      message: err.message,
+    });
+  }
+};
 module.exports = {
   createQuestion,
   updateQuestion,
@@ -254,5 +280,6 @@ module.exports = {
   deleteQuestion,
   getDetailsQuestion,
   getAllQuestion,
-  getQuestionsByUserId, toggleActiveQues
+  getQuestionsByUserId, toggleActiveQues,
+  getStatisticByUser
 };

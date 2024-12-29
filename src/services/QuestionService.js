@@ -1,4 +1,8 @@
 const Question = require("../models/QuestionModel");
+const Answer = require("../models/AnswerModel");
+const Comment = require("../models/CommentModel");
+const User = require("../models/UserModel");
+
 
 // Tạo câu hỏi mới
 const createQuestion = (newQuestion) => {
@@ -60,10 +64,9 @@ const updateQuestion = (id, data) => {
 const deleteQuestion = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      // Kiểm tra xem câu hỏi có tồn tại hay không
       const checkQuestion = await Question.findOne({ _id: id });
 
-      if (checkQuestion === null) {
+      if (!checkQuestion) {
         resolve({
           status: "OK",
           message: "The Question is not defined",
@@ -71,17 +74,52 @@ const deleteQuestion = (id) => {
         return;
       }
 
+      const questionOwnerId = checkQuestion.user;
+
+      // Xóa các câu trả lời liên quan đến câu hỏi
+      const deletedAnswers = await Answer.deleteMany({ question: id });
+      console.log(`${deletedAnswers.deletedCount} answers deleted.`);
+
+      // Cập nhật số lượng câu trả lời cho người sở hữu câu trả lời
+      if (deletedAnswers.deletedCount > 0) {
+        const answers = await Answer.find({ question: id });
+        for (const answer of answers) {
+          const answerOwnerId = answer.user;
+          const answerOwner = await User.findById(answerOwnerId);
+          if (answerOwner) {
+            answerOwner.ansCount = Math.max(0, answerOwner.ansCount - 1);
+            await answerOwner.save();
+            console.log(`User ansCount updated: ${answerOwner.ansCount}`);
+          }
+
+          // Xóa các bình luận liên quan đến câu trả lời
+          const deletedComments = await Comment.deleteMany({ answer: answer._id });
+          console.log(`${deletedComments.deletedCount} comments deleted.`);
+        }
+      }
+
+      // Cập nhật số lượng câu hỏi cho người sở hữu câu hỏi
+      const questionOwner = await User.findById(questionOwnerId);
+      if (questionOwner) {
+        questionOwner.quesCount = Math.max(0, questionOwner.quesCount - 1);
+        await questionOwner.save();
+        console.log(`User quesCount updated: ${questionOwner.quesCount}`);
+      }
+
       // Xóa câu hỏi
       await Question.findByIdAndDelete(id);
+      console.log("Question deleted.");
+
       resolve({
         status: "OK",
-        message: "DELETE Question IS SUCCESS",
+        message: "DELETE Question IS SUCCESS, along with associated answers and comments",
       });
     } catch (e) {
       reject(e);
     }
   });
 };
+
 
 // Lấy chi tiết câu hỏi
 const getDetailsQuestion = (id) => {
@@ -246,6 +284,26 @@ const toggleActiveQues = async (quesID) => {
   }
 };
 
+const getStatisticByUser = async ({ userQues, year, month }) => {
+  try {
+    const startOfMonth = new Date(year, month - 1, 1); // Ngày đầu tháng
+    const endOfMonth = new Date(year, month, 0, 23, 59, 59); // Ngày cuối tháng
+
+    const questions = await Question.find({
+      userQues: userQues,
+      createdAt: { $gte: startOfMonth, $lte: endOfMonth },
+    });
+
+    return {
+      status: "OK",
+      message: "Questions statistics retrieved successfully.",
+      data: questions,
+    };
+  } catch (err) {
+    throw new Error(err.message);
+  }
+};
+
 module.exports = {
   createQuestion,
   updateQuestion,
@@ -254,5 +312,6 @@ module.exports = {
   getAllQuestion,
   getQuestionsByUserId,
   findById,
-  findByIdAndUpdate,toggleActiveQues
+  findByIdAndUpdate,toggleActiveQues,
+  getStatisticByUser
 };

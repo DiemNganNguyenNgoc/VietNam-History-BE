@@ -24,5 +24,5 @@ router.get("/user/:userId",  questionController.getQuestionsByUserId);
 
 router.put("/toggle-active/:id",  questionController.toggleActiveQues);
 
-
+router.get("/get-by-statistic", questionController.getStatisticByUser);
 module.exports = router;

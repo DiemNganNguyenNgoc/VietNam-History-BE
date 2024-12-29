@@ -23,4 +23,5 @@ router.get("/answers/:id", answerController.getQuestionByAnswer);
 // Xem câu hỏi của một câu trả lời
 router.get("/get-by-question/:questionId", answerController.getAnswersByQuestionId);
 
+router.get("/get-by-statistic", answerController.getStatisticByUser);
 module.exports = router;

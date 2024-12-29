@@ -5,8 +5,8 @@ const userStatisticsSchema = new mongoose.Schema(
     {
         month: {type: Number, required: true}, 
         year: {type: Number, required: true},
-        registrationCount: {type: Number, required: true},
-        bannedCount: {type: Number, required: true},
+        registrationCount: {type: Number, default: 0},
+        bannedCount: {type: Number, default: 0},
     },
     {
         timestamps: true,
