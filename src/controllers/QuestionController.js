@@ -1,4 +1,5 @@
 const Question = require("../models/QuestionModel");
+const QuestionVote = require("../models/QuestionVoteModel");
 const QuestionService = require("../services/QuestionService");
 
 //create Question
@@ -108,6 +109,9 @@ const updateAnswerCount = async (req, res) => {
     });
   }
 };
+
+
+
 // Delete Question
 const deleteQuestion = async (req, res) => {
   try {
@@ -145,8 +149,8 @@ const deleteQuestion = async (req, res) => {
 const getDetailsQuestion = async (req, res) => {
   try {
     const questionId = req.params.id;
-    // console.log("questionId", questionId);
-
+   // console.log("questionId", questionId);
+    
     if (!questionId) {
       return res.status(400).json({
         status: "ERR",
@@ -175,14 +179,14 @@ const getDetailsQuestion = async (req, res) => {
 // Get All Questions
 const getAllQuestion = async (req, res) => {
   try {
-    const { limit, page, sort, filter, tag } = req.query;
+    const { limit, page, sort, filter, tag } = req.query;  
 
     const response = await QuestionService.getAllQuestion(
-      Number(limit) || 8,
-      Number(page) || 0,
-      sort,
-      filter,
-      tag
+      Number(limit) || 8,      
+      Number(page) || 0,       
+      sort,                    
+      filter,                 
+      tag                     
     );
 
     return res.status(200).json(response);
@@ -277,6 +281,38 @@ const toggleActiveQues = async (req, res) => {
       });
   }
 };
+
+const addVote = (req, res) => {
+  const { questionId, userId, isUpVote } = req.body;
+
+  // Check if all required fields are provided
+  if (!questionId || !userId || typeof isUpVote !== 'boolean') {
+    return res.status(400).json({
+      status: "ERR",
+      message: "Question ID, User ID, and vote type are required",
+    });
+  }
+
+  // Call the addVote service method and handle the promise
+  QuestionService.addVote({ questionId, userId, isUpVote })
+    .then(result => {
+      if (result.status === "FAIL") {
+        // If the result status is "FAIL", send a 400 response
+        return res.status(400).json(result);
+      }
+      // Otherwise, send a 200 response with the result data
+      return res.status(200).json(result);
+    })
+    .catch(error => {
+      console.error("Error adding vote:", error);
+      // In case of an error, send a 500 response
+      return res.status(500).json({
+        status: "ERR",
+        message: "An error occurred while adding the vote.",
+      });
+    });
+};
+
 module.exports = {
   createQuestion,
   updateQuestion,
@@ -284,6 +320,8 @@ module.exports = {
   deleteQuestion,
   getDetailsQuestion,
   getAllQuestion,
-  getQuestionsByUserId, toggleActiveQues,
   getQuestionsFromUserAnswers,
+  getQuestionsByUserId,
+  toggleActiveQues,
+  addVote,
 };

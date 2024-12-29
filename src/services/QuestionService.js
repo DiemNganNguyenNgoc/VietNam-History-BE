@@ -1,5 +1,6 @@
 const Question = require("../models/QuestionModel");
 const Answer = require("../models/AnswerModel");
+const QuestionVote = require('../models/QuestionVoteModel');
 
 // Tạo câu hỏi mới
 const createQuestion = (newQuestion) => {
@@ -315,6 +316,109 @@ const getQuestionsFromUserAnswers = (userId) => {
   });
 };
 
+const addVote = ({ questionId, userId, isUpVote }) => {
+  return new Promise((resolve, reject) => {
+    // Kiểm tra câu hỏi có tồn tại không
+    Question.findById(questionId)
+      .then(question => {
+        if (!question) {
+          return resolve({ status: "FAIL", message: "Câu hỏi không tồn tại!" });
+        }
+
+        // Kiểm tra người dùng đã vote cho câu hỏi này chưa
+        return QuestionVote.findOne({ user: userId, question: questionId })
+          .then(existingVote => {
+            if (existingVote) {
+              // Kiểm tra loại vote của người dùng
+              if (existingVote.type === isUpVote) {
+                // Nếu là loại vote giống nhau, xóa vote cũ
+                return existingVote.deleteOne()
+                  .then(() => {
+                    if (isUpVote) {
+                      question.upVoteCount -= 1; // Giảm upvote count
+                    } else {
+                      question.downVoteCount -= 1; // Giảm downvote count
+                    }
+                    return question.save();
+                  })
+                  .then(() => {
+                    resolve({
+                      status: "SUCCESS",
+                      message: "Vote đã được hủy!",
+                      data: question,
+                    });
+                  });
+              } else {
+                // Nếu loại vote khác, xóa vote cũ và thêm vote mới
+                return existingVote.deleteOne()
+                  .then(() => {
+                    if (isUpVote) {
+                      question.upVoteCount += 1; // Tăng upvote count
+                      question.downVoteCount -= 1; // Giảm downvote count
+                    } else {
+                      question.downVoteCount += 1; // Tăng downvote count
+                      question.upVoteCount -= 1; // Giảm upvote count
+                    }
+
+                    // Thêm vote mới
+                    const newVote = new QuestionVote({
+                      type: isUpVote,
+                      user: userId,
+                      question: questionId,
+                    });
+
+                    return newVote.save();
+                  })
+                  .then(() => {
+                    return question.save();
+                  })
+                  .then(() => {
+                    resolve({
+                      status: "SUCCESS",
+                      message: isUpVote ? "Upvote thành công!" : "Downvote thành công!",
+                      data: question,
+                    });
+                  });
+              }
+            } else {
+              // Nếu chưa vote, tạo vote mới
+              const newVote = new QuestionVote({
+                type: isUpVote,
+                user: userId,
+                question: questionId,
+              });
+
+              return newVote.save()
+                .then(() => {
+                  if (isUpVote) {
+                    question.upVoteCount += 1; // Tăng upvote count
+                  } else {
+                    question.downVoteCount += 1; // Tăng downvote count
+                  }
+
+                  return question.save();
+                })
+                .then(() => {
+                  resolve({
+                    status: "SUCCESS",
+                    message: isUpVote ? "Upvote thành công!" : "Downvote thành công!",
+                    data: question,
+                  });
+                });
+            }
+          })
+          .catch(error => {
+            console.error("Error checking existing vote:", error);
+            reject({ status: "FAIL", message: "Lỗi hệ thống khi kiểm tra vote!" });
+          });
+      })
+      .catch(error => {
+        console.error("Error finding question:", error);
+        reject({ status: "FAIL", message: "Lỗi hệ thống khi tìm câu hỏi!" });
+      });
+  });
+};
+
 module.exports = {
   createQuestion,
   updateQuestion,
@@ -326,4 +430,5 @@ module.exports = {
   findByIdAndUpdate,
   toggleActiveQues,
   getQuestionsFromUserAnswers,
+  addVote,
 };
