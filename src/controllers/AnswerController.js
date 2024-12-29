@@ -167,7 +167,7 @@ const getAnswersByQuestionIdAdmin = async (req, res) => {
   const { questionId } = req.params;
   
   try {
-    const answers = await AnswerService.getAnswersByQuestionId(questionId); // Gọi dịch vụ để lấy câu trả lời
+    const answers = await AnswerService.getAnswersByQuestionIdAdmin(questionId); // Gọi dịch vụ để lấy câu trả lời
     res.status(200).json({
       status: "OK",
       message: "Answers fetched successfully.",
