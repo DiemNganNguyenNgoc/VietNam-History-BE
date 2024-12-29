@@ -1,111 +1,70 @@
-const QuestionService = require("../services/QuestionService");
+const QuestionVoteService = require("../services/QuestionVoteService");
 
-//create Question
-const createQuestion = async (req, res) => {
+// Lấy tất cả các vote của câu hỏi
+const getVotesByQuestion = async (req, res) => {
   try {
-    //test input data
-    const { title, content, upVoteCount, downVoteCount, answerCount, view, reportCount, active, user  } =
-      req.body;
-    //console.log("req.body", req.body);
+    const questionId = req.params.id;
 
-    if (!title|| content|| upVoteCount|| downVoteCount|| answerCount||view|| reportCount|| active|| user ) {
-      //check have
+    if (!questionId) {
       return res.status(200).json({
         status: "ERR",
-        message: "The input is required",
+        message: "The 'questionId' is required",
       });
     }
 
-    const response = await QuestionService.createQuestion(req.body);
+    const response = await QuestionVoteService.getVotesByQuestion(questionId);
     return res.status(200).json(response);
   } catch (e) {
     return res.status(404).json({
-      message: e,
+      message: e.message || "An error occurred while fetching votes.",
     });
   }
 };
 
-//update Question
-const updateQuestion = async (req, res) => {
+// Kiểm tra trạng thái vote của người dùng đối với câu hỏi
+const checkVoteStatus = async (req, res) => {
   try {
-    const QuestionId = req.params.id;
-    const data = req.body;
-    if (!QuestionId) {
+    const { userId, questionId } = req.params;
+
+    if (!userId || !questionId) {
       return res.status(200).json({
         status: "ERR",
-        message: "The QuestionId is required",
+        message: "Both 'userId' and 'questionId' are required",
       });
     }
 
-    const response = await QuestionService.updateQuestion(QuestionId, data);
+    const response = await QuestionVoteService.checkVoteStatus(userId, questionId);
     return res.status(200).json(response);
   } catch (e) {
     return res.status(404).json({
-      message: e,
+      message: e.message || "An error occurred while checking vote status.",
     });
   }
 };
 
-//delete Question
-const deleteQuestion = async (req, res) => {
+// Thống kê lượt vote (upvote và downvote) của câu hỏi
+const getVoteStats = async (req, res) => {
   try {
-    const QuestionId = req.params.id;
-    //const token = req.headers;
+    const questionId = req.params.id;
 
-    if (!QuestionId) {
+    if (!questionId) {
       return res.status(200).json({
         status: "ERR",
-        message: "The QuestionId is required",
+        message: "The 'questionId' is required",
       });
     }
 
-    const response = await QuestionService.deleteQuestion(QuestionId);
+    const response = await QuestionVoteService.getVoteStats(questionId);
     return res.status(200).json(response);
   } catch (e) {
     return res.status(404).json({
-      message: e,
-    });
-  }
-};
-
-//get details Question
-const getDetailsQuestion = async (req, res) => {
-  try {
-    const QuestionId = req.params.id;
-
-    if (!QuestionId) {
-      return res.status(200).json({
-        status: "ERR",
-        message: "The QuestionId is required",
-      });
-    }
-
-    const response = await QuestionService.getDetailsQuestion(QuestionId);
-    return res.status(200).json(response);
-  } catch (e) {
-    return res.status(404).json({
-      message: e,
-    });
-  }
-};
-
-//get all Question
-const getAllQuestion = async (req, res) => {
-  try {
-    const { limit, page, sort, filter } = req.query;
-    const response = await QuestionService.getAllQuestion(Number(limit) || 8, Number(page) || 0, sort, filter);
-    return res.status(200).json(response);
-  } catch (e) {
-    return res.status(404).json({
-      message: e,
+      message: e.message || "An error occurred while fetching vote stats.",
     });
   }
 };
 
 module.exports = {
-  createQuestion,
-  updateQuestion,
-  deleteQuestion,
-  getDetailsQuestion,
-  getAllQuestion,
+  getVotesByQuestion,
+  checkVoteStatus,
+  getVoteStats,
 };

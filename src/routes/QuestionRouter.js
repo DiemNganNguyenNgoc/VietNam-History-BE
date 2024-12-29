@@ -22,7 +22,10 @@ router.get("/get-all-question",  questionController.getAllQuestion);
 
 router.get("/user/:userId",  questionController.getQuestionsByUserId);
 
+router.get("/answers/user/:userId", questionController.getQuestionsFromUserAnswers);
+
 router.put("/toggle-active/:id",  questionController.toggleActiveQues);
 
-router.get("/get-by-statistic", questionController.getStatisticByUser);
+router.post("/questions/:id/vote", questionController.addVote);
+
 module.exports = router;

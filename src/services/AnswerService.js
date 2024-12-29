@@ -191,8 +191,46 @@ const getAllAnswer = (limit, page, sort, filter) => {
   });
 };
 
-// Lấy tất cả câu trả lời theo ID câu hỏi
-const getAnswersByQuestionId = (questionId) => {
+const getAnswersByQuestionId = (questionId, filterActive) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Kiểm tra và chuyển đổi questionId thành ObjectId
+      if (!mongoose.Types.ObjectId.isValid(questionId)) {
+        return resolve({
+          status: "ERR",
+          message: "Invalid questionId format.",
+        });
+      }
+
+      // Create the query object
+      let query = {
+        question: new mongoose.Types.ObjectId(questionId),
+        active:true
+      };
+     
+
+      const answers = await Answer.find(query);
+
+      if (!answers || answers.length === 0) {
+        return resolve({
+          status: "OK",
+          message: "No answers found for this question.",
+          data: [],
+        });
+      }
+
+      resolve({
+        status: "OK",
+        message: "SUCCESS",
+        data: answers,
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+const getAnswersByQuestionIdAdmin = (questionId) => {
   return new Promise(async (resolve, reject) => {
     try {
       // Kiểm tra và chuyển đổi questionId thành ObjectId
@@ -237,25 +275,46 @@ const getQuestionByAnswer = async (answerId) => {
   }
 };
 
+const toggleActiveAns = async (answerId) => {
+  try {
+    const answer = await Answer.findById(answerId);
+    if (!answer) {
+      throw new Error('Answer not found');
+    }
+
+    answer.active = !answer.active;
+    await answer.save();
+
+    return {
+      status: 'OK',
+      message: 'SUCCESS',
+      data: answer,
+    };
+  } catch (error) {
+    throw new Error(error.message || 'An error occurred');
+  }
+};
+
 const getStatisticByUser = async ({ userAns, year, month }) => {
   try {
     const startOfMonth = new Date(year, month - 1, 1); // Ngày đầu tháng
     const endOfMonth = new Date(year, month, 0, 23, 59, 59); // Ngày cuối tháng
 
-    const answers = await Answer.find({
+    const answer = await Answer.find({
       userAns: userAns,
       createdAt: { $gte: startOfMonth, $lte: endOfMonth },
     });
 
     return {
       status: "OK",
-      message: "Answers statistics retrieved successfully.",
-      data: answers,
+      message: "Questions statistics retrieved successfully.",
+      data: answer,
     };
   } catch (err) {
     throw new Error(err.message);
   }
 };
+
 
 module.exports = {
   createAnswer,
@@ -265,5 +324,7 @@ module.exports = {
   getAllAnswer,
   getQuestionByAnswer,
   getAnswersByQuestionId,
+  toggleActiveAns,
+  getAnswersByQuestionIdAdmin,
   getStatisticByUser
 };

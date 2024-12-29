@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const QuestionVoteController = require('../controllers/QuestionVoteController');
+const questionVoteController = require('../controllers/QuestionVoteController');
 
-router.post('/vote', QuestionVoteController.createOrUpdateVote);
-router.delete('/vote/:userId/:questionId', QuestionVoteController.deleteVote);
-router.get('/votes/:questionId', QuestionVoteController.getVotesByQuestion);
-router.get('/vote-status/:userId/:questionId', QuestionVoteController.checkVoteStatus);
-router.get('/vote-stats/:questionId', QuestionVoteController.getVoteStats);
+router.get('/votes/:questionId', questionVoteController.getVotesByQuestion);
+
+router.get('/vote-status/:userId/:questionId', questionVoteController.checkVoteStatus);
+
+router.get('/vote-stats/:questionId', questionVoteController.getVoteStats);
 
 module.exports = router;

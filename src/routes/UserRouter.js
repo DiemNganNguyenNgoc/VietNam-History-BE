@@ -16,5 +16,6 @@ router.post("/add-follower/:id", verifyToken, userController.addFollower);
 // Route lấy danh sách tất cả người dùng trừ người dùng hiện tại
 router.get("/get-all-except-self", verifyToken, userController.getAllUsersExceptSelf);
 router.put("/update-ques-count/:id", userController.updateQuesCount);
+router.put("/update-answer-count/:id", userController.updateAnswerCount);
 
 module.exports = router;
