@@ -173,7 +173,7 @@ const getAllAdmin = async (req, res) => {
 const getDetailsAdmin = async (req, res) => {
   try {
     const adminId = req.params.id;
-
+    console.log("ID", adminId)
     if (!adminId) {
       return res.status(400).json({
         status: "ERR",

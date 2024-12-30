@@ -216,6 +216,8 @@ const getAllAdmin = (limit = 4, page = 0) => {
 
 //get details Admin
 const getDetailsAdmin = (id) => {
+  console.log("ID truyền vào service:", id);
+
   return new Promise(async (resolve, reject) => {
     try {
       //check email created
