@@ -25,4 +25,5 @@ router.get("/get-by-question/:questionId", answerController.getAnswersByQuestion
 router.get("/admin/get-by-question/:questionId", answerController.getAnswersByQuestionIdAdmin);
 router.put("/toggle-active/:id",  answerController.toggleActiveAns);
 
+router.get("/get-by-statistic", answerController.getStatisticByUser);
 module.exports = router;

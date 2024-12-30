@@ -5,9 +5,8 @@ const tagStatisticsSchema = new mongoose.Schema(
     {
         month: {type: Number, required: true}, 
         year: {type: Number, required: true},
-        quesNotAnsCount: {type: Number, required: true},
-        quesCount: {type: Number, required: true},
-        ansCount: {type: Number, required: true},
+        quesCount: {type: Number, default: 0},
+        ansCount: {type: Number, default: 0},
         tag: {
             type: mongoose.Schema.Types.Objectid, 
             ref: 'Tag',

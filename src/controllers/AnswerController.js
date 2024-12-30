@@ -159,6 +159,26 @@ const getAnswersByQuestionId = async (req, res) => {
   }
 };
 
+const getStatisticByUser = async (req, res) => {
+  try {
+    const { userAns, year, month } = req.query;
+
+    if (!userAns || !year || !month) {
+      return res.status(400).json({
+        status: "ERR",
+        message: "Missing required query parameters: user, year, and month.",
+      });
+    }
+
+    const result = await AnswerService.getStatisticByUser({ userAns, year, month });
+    return res.status(200).json(result);
+  } catch (err) {
+    return res.status(500).json({
+      status: "ERR",
+      message: err.message,
+    });
+  }
+};
 
 // Lấy tất cả câu trả lời theo ID câu hỏi (Admin)
 const getAnswersByQuestionIdAdmin = async (req, res) => {
@@ -223,6 +243,7 @@ module.exports = {
   getAllAnswer,
   getQuestionByAnswer,
   getAnswersByQuestionId,
+  getStatisticByUser,
   toggleActiveAns,
   getAnswersByQuestionIdAdmin
 };

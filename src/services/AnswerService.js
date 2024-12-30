@@ -295,6 +295,26 @@ const toggleActiveAns = async (answerId) => {
   }
 };
 
+const getStatisticByUser = async ({ userAns, year, month }) => {
+  try {
+    const startOfMonth = new Date(year, month - 1, 1); // Ngày đầu tháng
+    const endOfMonth = new Date(year, month, 0, 23, 59, 59); // Ngày cuối tháng
+
+    const answer = await Answer.find({
+      userAns: userAns,
+      createdAt: { $gte: startOfMonth, $lte: endOfMonth },
+    });
+
+    return {
+      status: "OK",
+      message: "Questions statistics retrieved successfully.",
+      data: answer,
+    };
+  } catch (err) {
+    throw new Error(err.message);
+  }
+};
+
 
 module.exports = {
   createAnswer,
@@ -305,5 +325,6 @@ module.exports = {
   getQuestionByAnswer,
   getAnswersByQuestionId,
   toggleActiveAns,
-  getAnswersByQuestionIdAdmin
+  getAnswersByQuestionIdAdmin,
+  getStatisticByUser
 };

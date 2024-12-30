@@ -5,9 +5,9 @@ const monthlyActivityStatisticsSchema = new mongoose.Schema(
     {
         month: {type: Number, required: true}, 
         year: {type: Number, required: true},
-        registrationCount: {type: Number, required: true},
-        quesCount: {type: Number, required: true},
-        ansCount: {type: Number, required: true},
+        registrationCount: {type: Number, default: 0},
+        quesCount: {type: Number, default: 0},
+        ansCount: {type: Number, default: 0},
     },
     {
         timestamps: true,

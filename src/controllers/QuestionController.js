@@ -72,7 +72,7 @@ const updateQuestion = async (req, res) => {
 const updateAnswerCount = async (req, res) => {
   try {
     const questionId = req.params.id;
-    
+
     // Lấy câu hỏi hiện tại từ cơ sở dữ liệu
     const question = await QuestionService.findById(questionId);
     if (!question) {
@@ -92,7 +92,7 @@ const updateAnswerCount = async (req, res) => {
         answerCount: updatedAnswerCount, // Cập nhật answerCount
         ...req.body, // Cập nhật các trường khác (title, content, note, tags, images)
       },
-      { new: true }  // Trả về câu hỏi đã cập nhật
+      { new: true } // Trả về câu hỏi đã cập nhật
     );
 
     return res.status(200).json({
@@ -100,7 +100,6 @@ const updateAnswerCount = async (req, res) => {
       message: "Question updated successfully",
       data: updatedQuestion,
     });
-
   } catch (e) {
     console.error("Error updating question: ", e);
     return res.status(500).json({
@@ -110,13 +109,12 @@ const updateAnswerCount = async (req, res) => {
   }
 };
 
-
-
 // Delete Question
 const deleteQuestion = async (req, res) => {
   try {
     const questionId = req.params.id;
 
+    // Kiểm tra nếu ID câu hỏi không tồn tại
     if (!questionId) {
       return res.status(400).json({
         status: "ERR",
@@ -124,23 +122,26 @@ const deleteQuestion = async (req, res) => {
       });
     }
 
+    // Gọi service để xóa câu hỏi cùng các answer và comment liên quan
     const response = await QuestionService.deleteQuestion(questionId);
-    if (!response) {
-      return res.status(404).json({
-        status: "ERR",
-        message: "Question not found",
+
+    if (response.status === "OK") {
+      return res.status(200).json({
+        status: "OK",
+        message: response.message,
       });
     }
 
-    return res.status(200).json({
-      status: "OK",
-      message: "Question deleted successfully",
+    return res.status(404).json({
+      status: "ERR",
+      message: "Question not found",
     });
   } catch (e) {
     console.error("Error deleting question: ", e);
     return res.status(500).json({
       status: "ERR",
-      message: "An error occurred while deleting the question.",
+      message:
+        "An error occurred while deleting the question and associated data.",
     });
   }
 };
@@ -149,8 +150,8 @@ const deleteQuestion = async (req, res) => {
 const getDetailsQuestion = async (req, res) => {
   try {
     const questionId = req.params.id;
-   // console.log("questionId", questionId);
-    
+    // console.log("questionId", questionId);
+
     if (!questionId) {
       return res.status(400).json({
         status: "ERR",
@@ -179,14 +180,14 @@ const getDetailsQuestion = async (req, res) => {
 // Get All Questions
 const getAllQuestion = async (req, res) => {
   try {
-    const { limit, page, sort, filter, tag } = req.query;  
+    const { limit, page, sort, filter, tag } = req.query;
 
     const response = await QuestionService.getAllQuestion(
-      Number(limit) || 8,      
-      Number(page) || 0,       
-      sort,                    
-      filter,                 
-      tag                     
+      Number(limit),
+      Number(page),
+      sort,
+      filter,
+      tag
     );
 
     return res.status(200).json(response);
@@ -272,30 +273,53 @@ const getQuestionsFromUserAnswers = async (req, res) => {
 const toggleActiveQues = async (req, res) => {
   const { id } = req.params; // Lấy id từ tham số route
   try {
-      const result = await QuestionService.toggleActiveQues(id);
-      res.status(200).json(result);
+    const result = await QuestionService.toggleActiveQues(id);
+    res.status(200).json(result);
   } catch (error) {
-      res.status(400).json({
-          status: 'ERR',
-          message: error.message,
+    res.status(400).json({
+      status: "ERR",
+      message: error.message,
+    });
+  }
+};
+
+const getStatisticByUser = async (req, res) => {
+  try {
+    const { userQues, year, month } = req.query;
+
+    if (!userQues || !year || !month) {
+      return res.status(400).json({
+        status: "ERR",
+        message: "Missing required query parameters: user, year, and month.",
       });
+    }
+
+    const result = await QuestionService.getStatisticByUser({
+      userQues,
+      year,
+      month,
+    });
+    return res.status(200).json(result);
+  } catch (err) {
+    return res.status(500).json({
+      status: "ERR",
+      message: err.message,
+    });
   }
 };
 
 const addVote = (req, res) => {
   const { questionId, userId, isUpVote } = req.body;
-
   // Check if all required fields are provided
-  if (!questionId || !userId || typeof isUpVote !== 'boolean') {
+  if (!questionId || !userId || typeof isUpVote !== "boolean") {
     return res.status(400).json({
       status: "ERR",
       message: "Question ID, User ID, and vote type are required",
     });
   }
-
   // Call the addVote service method and handle the promise
   QuestionService.addVote({ questionId, userId, isUpVote })
-    .then(result => {
+    .then((result) => {
       if (result.status === "FAIL") {
         // If the result status is "FAIL", send a 400 response
         return res.status(400).json(result);
@@ -303,7 +327,7 @@ const addVote = (req, res) => {
       // Otherwise, send a 200 response with the result data
       return res.status(200).json(result);
     })
-    .catch(error => {
+    .catch((error) => {
       console.error("Error adding vote:", error);
       // In case of an error, send a 500 response
       return res.status(500).json({
@@ -320,6 +344,9 @@ module.exports = {
   deleteQuestion,
   getDetailsQuestion,
   getAllQuestion,
+  getQuestionsByUserId,
+  toggleActiveQues,
+  getStatisticByUser,
   getQuestionsFromUserAnswers,
   getQuestionsByUserId,
   toggleActiveQues,

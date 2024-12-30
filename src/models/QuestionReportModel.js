@@ -5,12 +5,12 @@ const questionReportSchema = new mongoose.Schema(
     {
         //khoa ngoai
         user: {
-            type: mongoose.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.ObjectId, 
             ref: 'User',
             require: true
         },
         question: {
-            type: mongoose.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.ObjectId, 
             ref: 'Question',
             require: true
         },
