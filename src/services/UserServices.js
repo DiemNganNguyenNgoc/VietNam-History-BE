@@ -296,6 +296,28 @@ const updateAnswerCount = async (userId) => {
 
 //tạo access token dựa vào refresh token
 
+//Update active cua user
+const toggleActiveUser = async (userId) => {
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error('Answer not found');
+    }
+
+    user.active = !user.active;
+    await user.save();
+
+    return {
+      status: 'OK',
+      message: 'SUCCESS',
+      data: user,
+    };
+  } catch (error) {
+    throw new Error(error.message || 'An error occurred');
+  }
+};
+
+
 module.exports = {
   createUser,
   loginUser,
@@ -307,5 +329,6 @@ module.exports = {
   addFollower,
   getAllUsersExceptSelf,
   updateQuesCount,
-  updateAnswerCount
+  updateAnswerCount,
+  toggleActiveUser 
 };
