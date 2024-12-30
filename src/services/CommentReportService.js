@@ -7,7 +7,7 @@ const createCommentReport = async (data) => {
     try {
       const { user, comment } = data;
 
-      // Kiểm tra nếu đã tồn tại report giữa user và question
+      // Kiểm tra nếu đã tồn tại report giữa user và comment
       const existingReport = await CommentReport.findOne({ user, comment });
       if (existingReport) {
         return resolve({

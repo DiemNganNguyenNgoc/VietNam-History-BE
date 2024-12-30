@@ -12,7 +12,7 @@ const createAnswerReport = async (data) => {
       if (existingReport) {
         return resolve({
           status: "ERR",
-          message: "You have already reported this question.",
+          message: "You have already reported this answer.",
         });
       }
 
@@ -22,14 +22,14 @@ const createAnswerReport = async (data) => {
       // console.log("newReport", newReport);
 
       // Tăng reportCount của Question
-      await Comment.findByIdAndUpdate(answer, { $inc: { reportCount: 1 } });
+      await Answer.findByIdAndUpdate(answer, { $inc: { reportCount: 1 } });
 
       // Tăng reportCount của User
       await User.findByIdAndUpdate(user, { $inc: { reportCount: 1 } });
 
       resolve({
         status: "OK",
-        message: "Comment reported successfully.",
+        message: "Answer reported successfully.",
         data: newReport,
       });
     } catch (e) {

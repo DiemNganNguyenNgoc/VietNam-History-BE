@@ -7,7 +7,7 @@ const createAnswerReport = async (req, res) => {
     if (!user || !answer) {
       return res.status(400).json({
         status: "ERR",
-        message: "User ID and Comment ID are required.",
+        message: "User ID and Answer ID are required.",
       });
     }
 
