@@ -17,5 +17,5 @@ router.post("/add-follower/:id", verifyToken, userController.addFollower);
 router.get("/get-all-except-self", verifyToken, userController.getAllUsersExceptSelf);
 router.put("/update-ques-count/:id", userController.updateQuesCount);
 router.put("/update-answer-count/:id", userController.updateAnswerCount);
-
+router.put("/toggle-active/:id",  userController.toggleActiveUser);
 module.exports = router;

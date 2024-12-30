@@ -295,6 +295,38 @@ const updateAnswerCount = async (req, res) => {
   }
 };
 
+const toggleActiveUser = async (req, res) => {
+  const { id } = req.params; // Lấy id từ tham số route
+  console.log("ID", id)
+  // Kiểm tra xem id có tồn tại và hợp lệ không
+  if (!id) {
+    return res.status(400).json({
+      status: 'ERR',
+      message: 'ID is required.',
+    });
+  }
+
+  try {
+    const result = await UserServices.toggleActiveUser(id);
+
+    // Kiểm tra nếu không tìm thấy đối tượng
+    if (!result || result.status === 'ERR') {
+      console.error("Không tìm thấy user hoặc không thể cập nhật.");
+      return res.status(404).json({
+        status: 'ERR',
+        message: 'Answer not found or could not be updated.',
+      });
+    }
+    res.status(200).json(result); // Trả về kết quả thành công
+  } catch (error) {
+    console.error("Lỗi xảy ra trong toggleActiveUser:", error);
+    res.status(500).json({
+      status: 'ERR',
+      message: error.message || 'An unexpected error occurred.',
+    });
+  }
+};
+
 module.exports = {
   createUser,
   loginUser,
@@ -308,5 +340,6 @@ module.exports = {
   addFollower,
   getAllUsersExceptSelf,
   updateQuesCount,
-  updateAnswerCount
+  updateAnswerCount,
+  toggleActiveUser
 };

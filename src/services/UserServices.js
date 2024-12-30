@@ -297,11 +297,11 @@ const updateAnswerCount = async (userId) => {
 //tạo access token dựa vào refresh token
 
 //Update active cua user
-const toggleActiveUser = async (userId) => {
+const toggleActiveUser = async (id) => {
   try {
-    const user = await User.findById(userId);
+    const user = await User.findById(id);
     if (!user) {
-      throw new Error('Answer not found');
+      throw new Error('User not found');
     }
 
     user.active = !user.active;
