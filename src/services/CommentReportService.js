@@ -17,9 +17,9 @@ const createCommentReport = async (data) => {
       }
 
       // Tạo mới report
-      const newReport = await CommentReport.create({ user, question });
+      const newReport = await CommentReport.create({ user, comment });
 
-      console.log("newReport", newReport);
+      // console.log("newReport", newReport);
 
       // Tăng reportCount của Question
       await Comment.findByIdAndUpdate(comment, { $inc: { reportCount: 1 } });
