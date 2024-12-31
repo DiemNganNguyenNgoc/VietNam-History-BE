@@ -102,7 +102,7 @@ const updateUser = (id, data) => {
       const checkUser = await User.findOne({
         _id: id,
       });
-      console.log("checkUser", checkUser);
+      // console.log("checkUser", checkUser);
 
       //nếu user ko tồn tại
       if (checkUser === null) {
@@ -113,7 +113,7 @@ const updateUser = (id, data) => {
       }
 
       const updatedUser = await User.findByIdAndUpdate(id, data, { new: true });
-      console.log("updatedUser", updatedUser);
+      // console.log("updatedUser", updatedUser);
       resolve({
         status: "OK",
         message: "SUCCESS",
@@ -245,52 +245,122 @@ const viewFollower = (id) => {
 
 //add follower
 const addFollower = async (currentUserId, userIdToFollow) => {
-  const userToFollow = await User.findById(userIdToFollow);
-  if (!userToFollow) throw new Error("User to follow does not exist.");
-
-  const currentUser = await User.findById(currentUserId);
-  if (!currentUser) throw new Error("Current user does not exist.");
-
-  // Kiểm tra nếu đã follow
-  if (userToFollow.followers.includes(currentUserId)) {
-    throw new Error("You are already following this user.");
+  if (!currentUserId || !userIdToFollow) {
+    throw new Error("Both currentUserId and userIdToFollow are required");
   }
 
-  // Cập nhật danh sách followers và following
-  userToFollow.followers.push(currentUserId);
+  if (currentUserId === userIdToFollow) {
+    throw new Error("You cannot follow yourself");
+  }
+
+  const currentUser = await User.findById(currentUserId);
+  const userToFollow = await User.findById(userIdToFollow);
+
+  if (!currentUser || !userToFollow) {
+    throw new Error("User not found");
+  }
+
+  if (currentUser.following.includes(userIdToFollow)) {
+    throw new Error("You are already following this user");
+  }
+
+  // Cập nhật danh sách following và followers
   currentUser.following.push(userIdToFollow);
+  userToFollow.followers.push(currentUserId);
 
-  await userToFollow.save();
+  // Tăng followerCount và followingCount
+  currentUser.followingCount += 1;
+  userToFollow.followerCount += 1;
+
+  // Lưu thay đổi
   await currentUser.save();
+  await userToFollow.save();
 
-  return { userToFollow, currentUser };
+  return {
+    currentUserId: currentUser.id,
+    following: currentUser.following,
+    followerCount: userToFollow.followerCount,
+  };
+};
+
+const removeFollower = async (currentUserId, userIdToUnfollow) => {
+  if (!currentUserId || !userIdToUnfollow) {
+    throw new Error("Both currentUserId and userIdToUnfollow are required");
+  }
+
+  if (currentUserId === userIdToUnfollow) {
+    throw new Error("You cannot unfollow yourself");
+  }
+
+  const currentUser = await User.findById(currentUserId);
+  const userToUnfollow = await User.findById(userIdToUnfollow);
+
+  if (!currentUser || !userToUnfollow) {
+    throw new Error("User not found");
+  }
+
+  if (!currentUser.following.includes(userIdToUnfollow)) {
+    throw new Error("You are not following this user");
+  }
+
+  // Cập nhật danh sách following và followers
+  currentUser.following = currentUser.following.filter(
+    (id) => id.toString() !== userIdToUnfollow
+  );
+  userToUnfollow.followers = userToUnfollow.followers.filter(
+    (id) => id.toString() !== currentUserId
+  );
+
+  // Giảm followerCount và followingCount
+  currentUser.followingCount -= 1;
+  userToUnfollow.followerCount -= 1;
+
+  // Lưu thay đổi
+  await currentUser.save();
+  await userToUnfollow.save();
+
+  return {
+    currentUserId: currentUser.id,
+    following: currentUser.following,
+    followerCount: userToUnfollow.followerCount,
+  };
+};
+
+const getFollowingUsers = async (userId) => {
+  const currentUser  = await User.findById(userId).populate("following");
+
+  if (!currentUser ) {
+    throw new Error("User  not found");
+  }
+
+  return currentUser.following; // Trả về danh sách user mà user hiện tại đang follow
 };
 
 const updateQuesCount = async (userId) => {
   try {
-      const user = await User.findById(userId);
-      if (!user) {
-          return null;
-      }
-      user.quesCount = (user.quesCount || 0) + 1; // Nếu `quesCount` chưa được khởi tạo thì set về 0
-      await user.save();
-      return user;
+    const user = await User.findById(userId);
+    if (!user) {
+      return null;
+    }
+    user.quesCount = (user.quesCount || 0) + 1; // Nếu `quesCount` chưa được khởi tạo thì set về 0
+    await user.save();
+    return user;
   } catch (error) {
-      throw error;
+    throw error;
   }
 };
 
 const updateAnswerCount = async (userId) => {
   try {
-      const user = await User.findById(userId);
-      if (!user) {
-          return null;
-      }
-      user.answerCount = (user.answerCount || 0) + 1; // Nếu `quesCount` chưa được khởi tạo thì set về 0
-      await user.save();
-      return user;
+    const user = await User.findById(userId);
+    if (!user) {
+      return null;
+    }
+    user.answerCount = (user.answerCount || 0) + 1; // Nếu `quesCount` chưa được khởi tạo thì set về 0
+    await user.save();
+    return user;
   } catch (error) {
-      throw error;
+    throw error;
   }
 };
 
@@ -301,22 +371,21 @@ const toggleActiveUser = async (id) => {
   try {
     const user = await User.findById(id);
     if (!user) {
-      throw new Error('User not found');
+      throw new Error("User not found");
     }
 
     user.active = !user.active;
     await user.save();
 
     return {
-      status: 'OK',
-      message: 'SUCCESS',
+      status: "OK",
+      message: "SUCCESS",
       data: user,
     };
   } catch (error) {
-    throw new Error(error.message || 'An error occurred');
+    throw new Error(error.message || "An error occurred");
   }
 };
-
 
 module.exports = {
   createUser,
@@ -327,8 +396,10 @@ module.exports = {
   getDetailsUser,
   viewFollower,
   addFollower,
+  removeFollower,
+  getFollowingUsers,
   getAllUsersExceptSelf,
   updateQuesCount,
   updateAnswerCount,
-  toggleActiveUser 
+  toggleActiveUser,
 };

@@ -241,7 +241,10 @@ const addFollower = async (req, res) => {
     const currentUserId = req.user.id; // Lấy từ token đã xác thực
     const userIdToFollow = req.params.id;
 
-    const response = await UserServices.addFollower(currentUserId, userIdToFollow);
+    const response = await UserServices.addFollower(
+      currentUserId,
+      userIdToFollow
+    );
 
     res.status(200).json({
       status: "OK",
@@ -253,56 +256,96 @@ const addFollower = async (req, res) => {
   }
 };
 
+const removeFollower = async (req, res) => {
+  try {
+    const currentUserId = req.user.id; // Lấy từ token đã xác thực
+    const userIdToUnfollow = req.params.id;
+
+    const response = await UserServices.removeFollower(
+      currentUserId,
+      userIdToUnfollow
+    );
+
+    res.status(200).json({
+      status: "OK",
+      message: "Unfollowed successfully",
+      data: response,
+    });
+  } catch (error) {
+    res.status(500).json({ status: "ERR", message: error.message });
+  }
+};
+
+const getFollowingUsers = async (req, res) => {
+  try {
+    const currentUserId = req.user.id; // ID của user hiện tại (lấy từ token)
+    const followingUsers = await UserServices.getFollowingUser(currentUserId);
+
+    res.status(200).json({
+      status: "OK",
+      data: followingUsers, // Danh sách user mà user hiện tại đang follow
+    });
+  } catch (error) {
+    if (error.message === "User  not found") {
+      return res.status(404).json({
+        status: "ERR",
+        message: error.message,
+      });
+    }
+    res.status(500).json({ status: "ERR", message: error.message });
+  }
+};
+
 const updateQuesCount = async (req, res) => {
   try {
-      const { id } = req.params;
-      const updatedUser = await UserServices.updateQuesCount(id);
-      if (updatedUser) {
-          return res.status(200).json({
-              message: "QuesCount updated successfully",
-              data: updatedUser,
-          });
-      }
-      return res.status(404).json({
-          message: "User not found",
+    const { id } = req.params;
+    const updatedUser = await UserServices.updateQuesCount(id);
+    if (updatedUser) {
+      return res.status(200).json({
+        message: "QuesCount updated successfully",
+        data: updatedUser,
       });
+    }
+    return res.status(404).json({
+      message: "User not found",
+    });
   } catch (error) {
-      console.error(error);
-      return res.status(500).json({
-          message: "Internal Server Error",
-      });
+    console.error(error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
   }
 };
 
 const updateAnswerCount = async (req, res) => {
   try {
-      const { id } = req.params;
-      const updatedUser = await UserServices.updateAnswerCount(id);
-      if (updatedUser) {
-          return res.status(200).json({
-              message: "QuesCount updated successfully",
-              data: updatedUser,
-          });
-      }
-      return res.status(404).json({
-          message: "User not found",
+    const { id } = req.params;
+    const updatedUser = await UserServices.updateAnswerCount(id);
+    if (updatedUser) {
+      return res.status(200).json({
+        message: "QuesCount updated successfully",
+        data: updatedUser,
       });
+    }
+    return res.status(404).json({
+      message: "User not found",
+    });
   } catch (error) {
-      console.error(error);
-      return res.status(500).json({
-          message: "Internal Server Error",
-      });
+    console.error(error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
   }
 };
 
 const toggleActiveUser = async (req, res) => {
   const { id } = req.params; // Lấy id từ tham số route
-  console.log("ID", id)
+  console.log("ID", id);
   // Kiểm tra xem id có tồn tại và hợp lệ không
   if (!id) {
     return res.status(400).json({
-      status: 'ERR',
-      message: 'ID is required.',
+      status: "ERR",
+      message: "ID is required.",
     });
   }
 
@@ -310,19 +353,19 @@ const toggleActiveUser = async (req, res) => {
     const result = await UserServices.toggleActiveUser(id);
 
     // Kiểm tra nếu không tìm thấy đối tượng
-    if (!result || result.status === 'ERR') {
+    if (!result || result.status === "ERR") {
       console.error("Không tìm thấy user hoặc không thể cập nhật.");
       return res.status(404).json({
-        status: 'ERR',
-        message: 'Answer not found or could not be updated.',
+        status: "ERR",
+        message: "Answer not found or could not be updated.",
       });
     }
     res.status(200).json(result); // Trả về kết quả thành công
   } catch (error) {
     console.error("Lỗi xảy ra trong toggleActiveUser:", error);
     res.status(500).json({
-      status: 'ERR',
-      message: error.message || 'An unexpected error occurred.',
+      status: "ERR",
+      message: error.message || "An unexpected error occurred.",
     });
   }
 };
@@ -338,8 +381,10 @@ module.exports = {
   viewFollower,
   refreshToken,
   addFollower,
+  removeFollower,
+  getFollowingUsers,
   getAllUsersExceptSelf,
   updateQuesCount,
   updateAnswerCount,
-  toggleActiveUser
+  toggleActiveUser,
 };

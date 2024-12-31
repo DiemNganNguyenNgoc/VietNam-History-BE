@@ -61,6 +61,7 @@ const verifyToken = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN);
+    console.log("Decoded token:", decoded);
     req.user = decoded; // Lưu thông tin user
     next();
   } catch (error) {
