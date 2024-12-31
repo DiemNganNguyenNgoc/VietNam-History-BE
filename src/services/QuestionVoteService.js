@@ -1,4 +1,5 @@
 const QuestionVote = require("../models/QuestionVoteModel");
+const Question = require("../models/QuestionModel");
 
 // Tạo hoặc cập nhật vote
 const createOrUpdateVote = (newVote) => {
@@ -138,10 +139,70 @@ const getVoteStats = (questionId) => {
   });
 };
 
+const getVotesAndQuestionsFromUser = (userId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Kiểm tra xem userId có tồn tại hay không
+      if (!userId) {
+        resolve({
+          status: "FAIL",
+          message: "User ID is required",
+        });
+        return;
+      }
+
+      // Lấy tất cả thông tin vote từ userId
+      const userVotes = await QuestionVote.find({ user: userId }); // user là trường chứa ID của người dùng
+      const questionIds = userVotes.map((vote) => vote.question); // Lấy danh sách các questionId từ vote
+
+      // Nếu không có vote nào
+      if (questionIds.length === 0) {
+        resolve({
+          status: "OK",
+          message: "No votes found for this user",
+          data: [],
+        });
+        return;
+      }
+
+      // Lấy toàn bộ thông tin các câu hỏi dựa trên questionIds
+      const questions = await Question.find({ _id: { $in: questionIds } })
+        .populate('userQues', 'name email') // Populate thông tin user của câu hỏi
+        .populate('tags', 'name'); // Populate thông tin tag của câu hỏi
+
+      const result = questions.map((question) => {
+        const vote = userVotes.find(
+          (vote) => vote.question.toString() === question._id.toString()
+        );
+        return {
+          ...question._doc,
+          voteType: vote ? vote.type : null, // Thêm thông tin loại vote (upvote hoặc downvote)
+          voteCreatedAt: vote ? vote.createdAt : null, // Thêm thời gian cập nhật của vote
+        };
+      });
+
+      // Trả về kết quả
+      resolve({
+        status: "OK",
+        message: "Questions retrieved successfully from user votes",
+        data: result,
+      });
+    } catch (e) {
+      reject({
+        status: "FAIL",
+        message: "Error retrieving questions from user votes",
+        error: e.message,
+      });
+    }
+  });
+};
+
+
 module.exports = {
   createOrUpdateVote,
   deleteVote,
   getVotesByQuestion,
   checkVoteStatus,
   getVoteStats,
+  getVotesAndQuestionsFromUser,
 };

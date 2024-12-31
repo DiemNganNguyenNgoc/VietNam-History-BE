@@ -8,4 +8,6 @@ router.get('/vote-status/:userId/:questionId', questionVoteController.checkVoteS
 
 router.get('/vote-stats/:questionId', questionVoteController.getVoteStats);
 
+router.get("/votes/questions/:userId", questionVoteController.getVotesAndQuestionsFromUser);
+
 module.exports = router;
