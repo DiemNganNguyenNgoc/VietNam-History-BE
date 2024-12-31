@@ -27,5 +27,7 @@ router.get("/answers/user/:userId", questionController.getQuestionsFromUserAnswe
 router.put("/toggle-active/:id",  questionController.toggleActiveQues);
 
 router.post("/questions/:id/vote", questionController.addVote);
+router.get("/get-by-statistic", questionController.getStatisticByUser);
+
 
 module.exports = router;

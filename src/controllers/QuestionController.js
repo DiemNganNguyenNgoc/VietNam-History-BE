@@ -180,14 +180,15 @@ const getDetailsQuestion = async (req, res) => {
 // Get All Questions
 const getAllQuestion = async (req, res) => {
   try {
-    const { limit, page, sort, filter, tag } = req.query;
+    const { limit, page, sort, filter, tag, active } = req.query;
 
     const response = await QuestionService.getAllQuestion(
       Number(limit),
       Number(page),
       sort,
       filter,
-      tag
+      tag,
+      active
     );
 
     return res.status(200).json(response);

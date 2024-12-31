@@ -158,19 +158,28 @@ const getDetailsQuestion = (id) => {
 };
 
 // Lấy tất cả câu hỏi
-const getAllQuestion = (limit, page, sort, filter, tag) => {
+const getAllQuestion = (limit, page, sort, filter, tag, active) => {
   return new Promise(async (resolve, reject) => {
     try {
       let query = {};
+      
+      // Thêm điều kiện lọc theo tag
       if (tag) {
         query.tags = tag;
       }
 
+      // Thêm điều kiện lọc theo filter
       if (filter) {
         const label = filter[0];
         query[label] = { $regex: filter[1] };
       }
 
+      // Thêm điều kiện lọc theo active
+      if (typeof active !== "undefined") {
+        query.active = active;
+      }
+
+      // Đếm tổng số câu hỏi dựa trên query
       const totalQuestion = await Question.countDocuments(query);
 
       if (sort) {
@@ -191,6 +200,7 @@ const getAllQuestion = (limit, page, sort, filter, tag) => {
         return;
       }
 
+      // Lấy danh sách câu hỏi không cần sort
       const allQuestion = await Question.find(query)
         .limit(limit)
         .skip(page * limit);
@@ -207,6 +217,7 @@ const getAllQuestion = (limit, page, sort, filter, tag) => {
     }
   });
 };
+
 
 // Lấy câu hỏi theo ID người dùng
 const getQuestionsByUserId = (userId, limit, page) => {
