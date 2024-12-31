@@ -13,6 +13,9 @@ router.get("/get-details/:id", userController.getDetailsUser); //lấy info user
 router.post("/refresh-token", userController.refreshToken); //cấp access token mới sau khi token cũ hết hạn dựa vào refresh token
 router.get("/view-follower/:id", userController.viewFollower);
 router.post("/add-follower/:id", verifyToken, userController.addFollower);
+router.post("/remove-follower/:id", verifyToken, userController.removeFollower);
+router.get("/following", verifyToken, userController.getFollowingUsers);
+
 // Route lấy danh sách tất cả người dùng trừ người dùng hiện tại
 router.get("/get-all-except-self", verifyToken, userController.getAllUsersExceptSelf);
 router.put("/update-ques-count/:id", userController.updateQuesCount);

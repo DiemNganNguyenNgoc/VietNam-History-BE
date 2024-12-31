@@ -63,8 +63,29 @@ const getVoteStats = async (req, res) => {
   }
 };
 
+const getVotesAndAnswersFromUser = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    if (!userId) {
+      return res.status(200).json({
+        status: "ERR",
+        message: "The 'userId' is required",
+      });
+    }
+
+    const response = await AnswerVoteService.getVotesAndAnswersFromUser(userId);
+    return res.status(200).json(response);
+  } catch (e) {
+    return res.status(404).json({
+      message: e.message || "An error occurred while fetching answers from user votes.",
+    });
+  }
+};
+
 module.exports = {
   getVotesByAnswer,
   checkVoteStatus,
   getVoteStats,
+  getVotesAndAnswersFromUser,
 };
