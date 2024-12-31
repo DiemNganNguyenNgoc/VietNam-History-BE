@@ -19,7 +19,7 @@ router.get("/get-all-admin", adminController.getAllAdmin);
 router.put("/update-admin/:id", authMiddleware, adminController.updateAdmin);
 
 // Xóa tài khoản admin
-router.delete("/delete-admin/:id", authMiddleware, adminController.deleteAdmin);
+router.delete("/delete-admin/:id",adminController.deleteAdmin);
 
 // Refresh token
 router.post("/refresh-token", adminController.refreshToken);
