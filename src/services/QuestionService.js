@@ -187,14 +187,14 @@ const getAllQuestion = (limit, page, sort, filter, tag, active) => {
         objectSort[sort[1]] = sort[0];
         const allQuestionSort = await Question.find(query)
           .limit(limit)
-          .skip(page * limit)
+          .skip((page-1) * limit)
           .sort(objectSort);
         resolve({
           status: "OK",
           message: "Get all Question IS SUCCESS",
           data: allQuestionSort,
           total: totalQuestion,
-          pageCurrent: Number(page + 1),
+          pageCurrent: Number(page ),
           totalPage: Math.ceil(totalQuestion / limit),
         });
         return;
@@ -203,13 +203,13 @@ const getAllQuestion = (limit, page, sort, filter, tag, active) => {
       // Lấy danh sách câu hỏi không cần sort
       const allQuestion = await Question.find(query)
         .limit(limit)
-        .skip(page * limit);
+        .skip((page-1) * limit)
       resolve({
         status: "OK",
         message: "Get all Question IS SUCCESS",
         data: allQuestion,
         total: totalQuestion,
-        pageCurrent: Number(page + 1),
+        pageCurrent: Number(page ),
         totalPage: Math.ceil(totalQuestion / limit),
       });
     } catch (e) {
