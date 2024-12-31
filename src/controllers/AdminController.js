@@ -277,5 +277,5 @@ module.exports = {
   getDetailsAdmin,
   refreshToken,
   changePasswordAdmin,
-  toggleAdminStatus,
+  //toggleAdminStatus,
 };

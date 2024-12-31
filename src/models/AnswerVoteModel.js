@@ -7,12 +7,12 @@ const answerVoteSchema = new mongoose.Schema(
 
         //khoa ngoai
         user: {
-            type: mongoose.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.ObjectId, 
             ref: 'User',
             require: true
         },
         answer: {
-            type: mongoose.Schema.Types.Objectid, 
+            type: mongoose.Schema.Types.ObjectId, 
             ref: 'Answer',
             require: true
         },

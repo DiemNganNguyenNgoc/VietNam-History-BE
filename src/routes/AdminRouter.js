@@ -28,6 +28,6 @@ router.post("/refresh-token", adminController.refreshToken);
 router.put("/change-password/:id", authMiddleware, adminController.changePasswordAdmin);
 
 // Kích hoạt/Vô hiệu hóa admin
-router.put("/toggle-admin-status/:id", authMiddleware, adminController.toggleAdminStatus);
+//router.put("/toggle-admin-status/:id", authMiddleware, adminController.toggleAdminStatus);
 
 module.exports = router;

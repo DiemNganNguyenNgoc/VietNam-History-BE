@@ -1,71 +1,5 @@
 const AnswerVote = require("../models/AnswerVoteModel");
 
-// Tạo hoặc cập nhật vote
-const createOrUpdateVote = (newVote) => {
-  const { type, userId, answerId } = newVote;
-  return new Promise(async (resolve, reject) => {
-    try {
-      // Kiểm tra xem người dùng đã vote chưa
-      const existingVote = await AnswerVote.findOne({
-        user: userId,
-        answer: answerId,
-      });
-
-      if (existingVote) {
-        // Nếu đã vote, cập nhật kiểu vote
-        existingVote.type = type;
-        await existingVote.save();
-        resolve({
-          status: "OK",
-          message: "Vote updated successfully",
-          data: existingVote,
-        });
-      } else {
-        // Nếu chưa vote, tạo mới
-        const createdNewVote = await AnswerVote.create({
-          type: type,
-          user: userId,
-          answer: answerId,
-        });
-        resolve({
-          status: "OK",
-          message: "Vote created successfully",
-          data: createdNewVote,
-        });
-      }
-    } catch (e) {
-      reject(e);
-    }
-  });
-};
-
-// Xóa vote
-const deleteVote = (userId, answerId) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      // Tìm vote của người dùng cho câu hỏi
-      const vote = await AnswerVote.findOneAndDelete({
-        user: userId,
-        answer: answerId,
-      });
-
-      if (!vote) {
-        resolve({
-          status: "OK",
-          message: "No vote found to delete",
-        });
-      } else {
-        resolve({
-          status: "OK",
-          message: "Vote deleted successfully",
-        });
-      }
-    } catch (e) {
-      reject(e);
-    }
-  });
-};
-
 // Lấy danh sách vote theo câu hỏi
 const getVotesByAnswer = (answerId) => {
   return new Promise(async (resolve, reject) => {
@@ -139,8 +73,6 @@ const getVoteStats = (answerId) => {
 };
 
 module.exports = {
-  createOrUpdateVote,
-  deleteVote,
   getVotesByAnswer,
   checkVoteStatus,
   getVoteStats,
