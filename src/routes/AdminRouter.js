@@ -27,6 +27,8 @@ router.post("/refresh-token", adminController.refreshToken);
 // Đổi mật khẩu admin
 router.put("/change-password/:id", authMiddleware, adminController.changePasswordAdmin);
 
+router.get("/filter", adminController.filterAdmin);
+
 // Kích hoạt/Vô hiệu hóa admin
 //router.put("/toggle-admin-status/:id", authMiddleware, adminController.toggleAdminStatus);
 

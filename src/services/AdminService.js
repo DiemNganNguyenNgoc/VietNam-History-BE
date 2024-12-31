@@ -336,9 +336,28 @@ const refreshToken = (token) => {
   });
 };
 
+const filterAdmin = async (filters) => {
+  const query = {};
+
+  if (filters.name) {
+    query.name = { $regex: filters.name, $options: "i" }; // Tìm kiếm tên không phân biệt hoa thường
+  }
+  if (filters.phone) {
+    query.phone = { $regex: filters.phone, $options: "i" }; // Tìm kiếm số điện thoại
+  }
+  if (filters.email) {
+    query.email = { $regex: filters.email, $options: "i" }; // Tìm kiếm email
+  }
+
+  // Truy vấn dữ liệu từ database
+  const admins = await Admin.find(query);
+  return admins;
+};
+
 //tạo access token dựa vào refresh token
 
 module.exports = {
+  filterAdmin,
   createAdmin,
   loginAdmin,
   updateAdmin,

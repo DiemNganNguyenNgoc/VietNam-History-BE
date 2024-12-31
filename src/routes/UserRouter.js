@@ -18,4 +18,5 @@ router.get("/get-all-except-self", verifyToken, userController.getAllUsersExcept
 router.put("/update-ques-count/:id", userController.updateQuesCount);
 router.put("/update-answer-count/:id", userController.updateAnswerCount);
 router.put("/toggle-active/:id",  userController.toggleActiveUser);
+router.get("/filter", userController.filterUsers);
 module.exports = router;

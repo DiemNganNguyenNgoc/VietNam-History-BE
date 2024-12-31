@@ -268,7 +268,31 @@ const changePasswordAdmin = async (req, res) => {
 //   }
 // };
 
+const filterAdmin = async (req, res) => {
+  try {
+    const { name, phone, email } = req.query;
+
+    // Gọi service để lọc người dùng
+    const admins = await AdminService.filterAdmin({ name, phone, email });
+
+    // Trả về kết quả
+    return res.status(200).json({
+      status: "OK",
+      message: "Filtered users successfully.",
+      data: admins,
+    });
+  } catch (error) {
+    console.error("Error filtering users: ", error);
+    return res.status(500).json({
+      status: "ERR",
+      message: "An error occurred while filtering users.",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
+  filterAdmin,
   createAdmin,
   loginAdmin,
   updateAdmin,

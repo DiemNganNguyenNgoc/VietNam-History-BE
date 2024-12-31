@@ -327,7 +327,31 @@ const toggleActiveUser = async (req, res) => {
   }
 };
 
+const filterUsers = async (req, res) => {
+  try {
+    const { name, phone, email, active } = req.query;
+
+    // Gọi service để lọc người dùng
+    const users = await UserServices.filterUsers({ name, phone, email, active });
+
+    // Trả về kết quả
+    return res.status(200).json({
+      status: "OK",
+      message: "Filtered users successfully.",
+      data: users,
+    });
+  } catch (error) {
+    console.error("Error filtering users: ", error);
+    return res.status(500).json({
+      status: "ERR",
+      message: "An error occurred while filtering users.",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
+  filterUsers,
   createUser,
   loginUser,
   updateUser,

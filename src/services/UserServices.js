@@ -317,8 +317,31 @@ const toggleActiveUser = async (id) => {
   }
 };
 
+const filterUsers = async (filters) => {
+  const query = {};
+
+  if (filters.name) {
+    query.name = { $regex: filters.name, $options: "i" }; // Tìm kiếm tên không phân biệt hoa thường
+  }
+  if (filters.phone) {
+    query.phone = { $regex: filters.phone, $options: "i" }; // Tìm kiếm số điện thoại
+  }
+  if (filters.email) {
+    query.email = { $regex: filters.email, $options: "i" }; // Tìm kiếm email
+  }
+
+  if (typeof active !== "undefined") {
+    query.active = active;
+  }
+
+  // Truy vấn dữ liệu từ database
+  const users = await User.find(query);
+  return users;
+};
+
 
 module.exports = {
+  filterUsers,
   createUser,
   loginUser,
   updateUser,
