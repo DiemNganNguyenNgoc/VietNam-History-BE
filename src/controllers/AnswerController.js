@@ -1,4 +1,5 @@
 const AnswerService = require("../services/AnswerService");
+const AnswerVote = require("../models/AnswerVoteModel");
 
 //create Answer
 const createAnswer = async (req, res) => {
@@ -83,16 +84,16 @@ const deleteAnswer = async (req, res) => {
 //get details Answer
 const getDetailsAnswer = async (req, res) => {
   try {
-    const AnswerId = req.params.id;
+    const answerId = req.params.id;
 
-    if (!AnswerId) {
+    if (!answerId) {
       return res.status(200).json({
         status: "ERR",
-        message: "The AnswerId is required",
+        message: "The answerId is required",
       });
     }
 
-    const response = await AnswerService.getDetailsAnswer(AnswerId);
+    const response = await AnswerService.getDetailsAnswer(answerId);
     return res.status(200).json(response);
   } catch (e) {
     return res.status(404).json({
@@ -234,6 +235,36 @@ const toggleActiveAns = async (req, res) => {
   }
 };
 
+const addVote = (req, res) => {
+  const { answerId, userId, isUpVote } = req.body;
+
+  // Check if all required fields are provided
+  if (!answerId || !userId || typeof isUpVote !== 'boolean') {
+    return res.status(400).json({
+      status: "ERR",
+      message: "Answer ID, User ID, and vote type are required",
+    });
+  }
+
+  // Call the addVote service method and handle the promise
+  AnswerService.addVote({ answerId, userId, isUpVote })
+    .then(result => {
+      if (result.status === "FAIL") {
+        // If the result status is "FAIL", send a 400 response
+        return res.status(400).json(result);
+      }
+      // Otherwise, send a 200 response with the result data
+      return res.status(200).json(result);
+    })
+    .catch(error => {
+      console.error("Error adding vote:", error);
+      // In case of an error, send a 500 response
+      return res.status(500).json({
+        status: "ERR",
+        message: "An error occurred while adding the vote.",
+      });
+    });
+};
 
 module.exports = {
   createAnswer,
@@ -245,5 +276,6 @@ module.exports = {
   getAnswersByQuestionId,
   getStatisticByUser,
   toggleActiveAns,
-  getAnswersByQuestionIdAdmin
+  getAnswersByQuestionIdAdmin,
+  addVote,
 };

@@ -1,5 +1,6 @@
 const Answer = require("../models/AnswerModel");
 const mongoose = require("mongoose");
+const AnswerVote = require('../models/AnswerVoteModel');
 //tạo Answer
 const createAnswer = (newAnswer) => {
   return new Promise(async (resolve, reject) => {
@@ -110,22 +111,20 @@ const getDetailsAnswer = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
       //check email created
-      const Answer = await Answer.findOne({
-        _id: id,
-      });
+      const answer = await Answer.findOne({ _id: id });
 
       //nếu Answer ko tồn tại
-      if (Answer === null) {
+      if (answer === null) {
         resolve({
           status: "OK",
-          message: "The Answer is not defined",
+          message: "The answer is not defined",
         });
       }
 
       resolve({
         status: "OK",
         message: "SUCCESS",
-        data: Answer,
+        data: answer,
       });
     } catch (e) {
       reject(e);
@@ -312,7 +311,110 @@ const getStatisticByUser = async ({ userAns, year, month }) => {
     };
   } catch (err) {
     throw new Error(err.message);
-  }
+  };
+  };
+
+const addVote = ({ answerId, userId, isUpVote }) => {
+  return new Promise((resolve, reject) => {
+    // Kiểm tra câu hỏi có tồn tại không
+    Answer.findById(answerId)
+      .then(answer => {
+        if (!answerId) {
+          return resolve({ status: "FAIL", message: "Câu trả lời không tồn tại!" });
+        }
+
+        // Kiểm tra người dùng đã vote cho câu trả lời này chưa
+        return AnswerVote.findOne({ user: userId, answer: answerId })
+          .then(existingVote => {
+            if (existingVote) {
+              // Kiểm tra loại vote của người dùng
+              if (existingVote.type === isUpVote) {
+                // Nếu là loại vote giống nhau, xóa vote cũ
+                return existingVote.deleteOne()
+                  .then(() => {
+                    if (isUpVote) {
+                      answer.upVoteCount -= 1; // Giảm upvote count
+                    } else {
+                      answer.downVoteCount -= 1; // Giảm downvote count
+                    }
+                    return answer.save();
+                  })
+                  .then(() => {
+                    resolve({
+                      status: "SUCCESS",
+                      message: "Vote đã được hủy!",
+                      data: answer,
+                    });
+                  });
+              } else {
+                // Nếu loại vote khác, xóa vote cũ và thêm vote mới
+                return existingVote.deleteOne()
+                  .then(() => {
+                    if (isUpVote) {
+                      answer.upVoteCount += 1; // Tăng upvote count
+                      answer.downVoteCount -= 1; // Giảm downvote count
+                    } else {
+                      answer.downVoteCount += 1; // Tăng downvote count
+                      answer.upVoteCount -= 1; // Giảm upvote count
+                    }
+
+                    // Thêm vote mới
+                    const newVote = new AnswerVote({
+                      type: isUpVote,
+                      user: userId,
+                      answer: answerId,
+                    });
+
+                    return newVote.save();
+                  })
+                  .then(() => {
+                    return answer.save();
+                  })
+                  .then(() => {
+                    resolve({
+                      status: "SUCCESS",
+                      message: isUpVote ? "Upvote thành công!" : "Downvote thành công!",
+                      data: answer,
+                    });
+                  });
+              }
+            } else {
+              // Nếu chưa vote, tạo vote mới
+              const newVote = new AnswerVote({
+                type: isUpVote,
+                user: userId,
+                answer: answerId,
+              });
+
+              return newVote.save()
+                .then(() => {
+                  if (isUpVote) {
+                    answer.upVoteCount += 1; // Tăng upvote count
+                  } else {
+                    answer.downVoteCount += 1; // Tăng downvote count
+                  }
+
+                  return answer.save();
+                })
+                .then(() => {
+                  resolve({
+                    status: "SUCCESS",
+                    message: isUpVote ? "Upvote thành công!" : "Downvote thành công!",
+                    data: answer,
+                  });
+                });
+            }
+          })
+          .catch(error => {
+            console.error("Error checking existing vote:", error);
+            reject({ status: "FAIL", message: "Lỗi hệ thống khi kiểm tra vote!" });
+          });
+      })
+      .catch(error => {
+        console.error("Error finding answer:", error);
+        reject({ status: "FAIL", message: "Lỗi hệ thống khi tìm trả lời!" });
+      });
+  });
 };
 
 
@@ -326,5 +428,6 @@ module.exports = {
   getAnswersByQuestionId,
   toggleActiveAns,
   getAnswersByQuestionIdAdmin,
-  getStatisticByUser
+  getStatisticByUser,
+  addVote,
 };
