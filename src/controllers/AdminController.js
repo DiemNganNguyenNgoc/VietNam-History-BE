@@ -132,7 +132,7 @@ const updateAdmin = async (req, res) => {
 const deleteAdmin = async (req, res) => {
   try {
     const adminId = req.params.id;
-    const token = req.headers;
+    
 
     if (!adminId) {
       return res.status(400).json({
@@ -173,7 +173,7 @@ const getAllAdmin = async (req, res) => {
 const getDetailsAdmin = async (req, res) => {
   try {
     const adminId = req.params.id;
-
+    console.log("ID", adminId)
     if (!adminId) {
       return res.status(400).json({
         status: "ERR",
@@ -246,27 +246,27 @@ const changePasswordAdmin = async (req, res) => {
   }
 };
 
-// Kích hoạt/Vô hiệu hóa admin
-const toggleAdminStatus = async (req, res) => {
-  try {
-    const adminId = req.params.id;
+// // Kích hoạt/Vô hiệu hóa admin
+// const toggleAdminStatus = async (req, res) => {
+//   try {
+//     const adminId = req.params.id;
 
-    if (!adminId) {
-      return res.status(400).json({
-        status: "ERR",
-        message: "Admin ID is required.",
-      });
-    }
+//     if (!adminId) {
+//       return res.status(400).json({
+//         status: "ERR",
+//         message: "Admin ID is required.",
+//       });
+//     }
 
-    const response = await AdminService.toggleAdminStatus(adminId);
-    return res.status(200).json(response);
-  } catch (e) {
-    return res.status(500).json({
-      status: "ERR",
-      message: e.message,
-    });
-  }
-};
+//     const response = await AdminService.toggleAdminStatus(adminId);
+//     return res.status(200).json(response);
+//   } catch (e) {
+//     return res.status(500).json({
+//       status: "ERR",
+//       message: e.message,
+//     });
+//   }
+// };
 
 module.exports = {
   createAdmin,

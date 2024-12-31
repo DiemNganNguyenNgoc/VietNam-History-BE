@@ -13,13 +13,13 @@ router.post("/log-in", adminController.loginAdmin);
 router.get("/get-detail-admin/:id", authUserMiddleware, adminController.getDetailsAdmin);
 
 // Lấy danh sách tất cả admin (có phân trang)
-router.get("/get-all-admin", authMiddleware, adminController.getAllAdmin);
+router.get("/get-all-admin", adminController.getAllAdmin);
 
 // Cập nhật thông tin admin
 router.put("/update-admin/:id", authMiddleware, adminController.updateAdmin);
 
 // Xóa tài khoản admin
-router.delete("/delete-admin/:id", authMiddleware, adminController.deleteAdmin);
+router.delete("/delete-admin/:id",adminController.deleteAdmin);
 
 // Refresh token
 router.post("/refresh-token", adminController.refreshToken);

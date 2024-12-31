@@ -1,27 +1,44 @@
-const AnswerReport = require("../models/answerReportModel");
-const Answer = require("../models/answerModel");
+const AnswerReport = require("../models/AnswerReportModel");
+const Answer = require("../models/AnswerModel");
+const User = require("../models/UserModel");
 
-const createAnswerReport = async ({ answer, userId }) => {
-  try {
-    const existingReport = await AnswerReport.findOne({ answer, user: userId });
-    if (existingReport) {
-      throw new Error("You have already reported this answer.");
+const createAnswerReport = async (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const { user, answer } = data;
+
+      // Kiểm tra nếu đã tồn tại report giữa user và question
+      const existingReport = await AnswerReport.findOne({ user, answer });
+      if (existingReport) {
+        return resolve({
+          status: "ERR",
+          message: "You have already reported this answer.",
+        });
+      }
+
+      // Tạo mới report
+      const newReport = await AnswerReport.create({ user, answer });
+
+      // console.log("newReport", newReport);
+
+      // Tăng reportCount của Question
+      await Answer.findByIdAndUpdate(answer, { $inc: { reportCount: 1 } });
+
+      // Tăng reportCount của User
+      await User.findByIdAndUpdate(user, { $inc: { reportCount: 1 } });
+
+      resolve({
+        status: "OK",
+        message: "Answer reported successfully.",
+        data: newReport,
+      });
+    } catch (e) {
+      reject({
+        status: "ERR",
+        message: e.message,
+      });
     }
-
-    const newReport = new AnswerReport({
-      answer,
-      user: userId,
-    });
-
-    await newReport.save();
-
-    // Tăng số lượng báo cáo trong Answer
-    await Answer.findByIdAndUpdate(answer, { $inc: { reportCount: 1 } });
-
-    return newReport;
-  } catch (err) {
-    throw new Error(err.message);
-  }
+  });
 };
 
 const getDetailsAnswerReport = async (reportId) => {

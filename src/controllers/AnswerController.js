@@ -180,10 +180,10 @@ const getStatisticByUser = async (req, res) => {
   }
 };
 
-// Lấy tất cả câu trả lời theo ID câu hỏi
+// Lấy tất cả câu trả lời theo ID câu hỏi (Admin)
 const getAnswersByQuestionIdAdmin = async (req, res) => {
   // console.log("req.params:", req.params);
- 
+
   const { questionId } = req.params;
   
   try {

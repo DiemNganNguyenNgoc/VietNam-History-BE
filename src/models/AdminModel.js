@@ -7,7 +7,7 @@ const adminSchema = new mongoose.Schema(
     name: { type: String, required: true },
     password: { type: String, required: true },
     phone: { type: String, required: true },
-    img: { type: String, required: false },
+    img: { type: String, required: false, default:"" },
     birthday: { type: Date, required: true },
     note: { type: String, required: false }, //textbox 'about me'
     isAdmin: { type: Boolean, required: true, default: false },
