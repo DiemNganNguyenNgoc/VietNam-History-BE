@@ -487,7 +487,31 @@ const getStatisticByUser = async ({ userQues, year, month }) => {
   }
 };
 
+const updateViewCount = async (id, userId) => {
+  try {
+    const question = await Question.findById(id);
+
+    if (!question) {
+      return null; // Không tìm thấy câu hỏi
+    }
+
+    // Nếu userId không phải là của người tạo câu hỏi, tăng view
+    if (question.userQues.toString() !== userId.toString()) {
+      question.view = (question.view || 0) + 1;
+      await question.save();
+    }
+
+    return question;
+  } catch (error) {
+    throw error; // Ném lỗi để controller xử lý
+  }
+};
+
+
+
+
 module.exports = {
+  updateViewCount,
   createQuestion,
   updateQuestion,
   deleteQuestion,

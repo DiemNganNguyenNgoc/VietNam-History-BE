@@ -30,4 +30,6 @@ router.get("/get-by-statistic", questionController.getStatisticByUser);
 
 router.post("/:id/vote", questionController.addVote);
 
+router.put("/update-view/:id/:userId", questionController.updateViewCount);
+
 module.exports = router;

@@ -338,7 +338,40 @@ const addVote = (req, res) => {
     });
 };
 
+const updateViewCount = async (req, res) => {
+  try {
+    const { id, userId } = req.params;
+
+    // Kiểm tra id và userId có được truyền vào không
+    if (!id || !userId) {
+      return res.status(400).json({
+        message: "Invalid parameters. 'id' and 'userId' are required.",
+      });
+    }
+
+    const updatedQues = await QuestionService.updateViewCount(id, userId);
+
+    if (updatedQues) {
+      return res.status(200).json({
+        message: "ViewCount updated successfully",
+        data: updatedQues,
+      });
+    } else {
+      return res.status(404).json({
+        message: "Question not found",
+      });
+    }
+  } catch (error) {
+    console.error("Error updating view count:", error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
+
+
 module.exports = {
+  updateViewCount,
   createQuestion,
   updateQuestion,
   updateAnswerCount,
