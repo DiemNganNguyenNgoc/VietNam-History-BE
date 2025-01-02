@@ -365,10 +365,40 @@ const updateViewCount = async (req, res) => {
     console.error("Error updating view count:", error);
     return res.status(500).json({
       message: "Internal Server Error",
-    });
+    })
   }
 };
 
+const searchQuestion = async (req, res) => {
+  try {
+    // Destructure query parameters from the request
+    const { keyword, tags, limit = 10, page = 1, sort, active } = req.query;
+
+    // Prepare the search parameters for the service
+    const searchParams = {
+      keyword,
+      tags: tags ? tags.split(",") : [], // Split tags by comma if provided
+      limit: Number(limit),
+      page: Number(page),
+      sort: sort ? JSON.parse(sort) : undefined, // Parse sorting options if provided
+      active: active !== undefined ? Boolean(active) : undefined, // Convert active to boolean if it's present
+    };
+
+    // Call the service function and wait for the result
+    const result = await QuestionService.searchQuestion(searchParams);
+
+    // Respond with the result from the service
+    return res.status(200).json(result);
+  } catch (error) {
+    // Catch any errors that occur in the try block and return a 500 status with the error details
+    console.error("Error searching questions:", error);
+    return res.status(500).json({
+      status: "ERR",
+      message: "An error occurred while searching the questions.",
+      error: error.message,
+    });
+  }
+};
 
 module.exports = {
   updateViewCount,
@@ -385,4 +415,5 @@ module.exports = {
   getQuestionsByUserId,
   toggleActiveQues,
   addVote,
+  searchQuestion,
 };

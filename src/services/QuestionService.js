@@ -3,7 +3,8 @@ const Answer = require("../models/AnswerModel");
 const QuestionVote = require('../models/QuestionVoteModel');
 const Comment = require("../models/CommentModel");
 const User = require("../models/UserModel");
-
+const mongoose = require('mongoose');
+const Tag = require("../models/TagModel");
 
 // Tạo câu hỏi mới
 const createQuestion = (newQuestion) => {
@@ -506,9 +507,75 @@ const updateViewCount = async (id, userId) => {
     throw error; // Ném lỗi để controller xử lý
   }
 };
+const searchQuestion = async (searchParams) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const { keyword, tags, limit = 10, page = 1, sort, active } = searchParams;
+      const query = {};
 
+      // Tìm kiếm theo từ khóa trong nội dung câu hỏi sử dụng RegExp
+      if (keyword) {
+        // Tạo biểu thức chính quy cho từ khóa, cho phép tìm kiếm không phân biệt chữ hoa chữ thường và không cần phải khớp chính xác
+        const regex = keyword.split(' ').join('.*');
+        query.$or = [
+          { title: { $regex: regex, $options: 'i' } },  // Tìm kiếm trong title
+          { content: { $regex: regex, $options: 'i' } }  // Tìm kiếm trong content
+        ];
+      }
 
+      // Lọc theo tag
+      if (tags && tags.length > 0) {
+        const tagObjects = await Tag.find({
+          name: {
+            $in: tags.map((tag) => new RegExp(tag, "i"))
+          },
+        });
 
+        if (tagObjects.length > 0) {
+          const tagIds = tagObjects.map((tag) => tag._id);
+          query.tags = { $in: tagIds };
+        }
+      }
+
+      // Lọc theo trạng thái
+      if (typeof active !== "undefined") {
+        query.active = active;
+      }
+
+      // Đếm tổng số kết quả
+      const totalQuestions = await Question.countDocuments(query);
+
+      // Sắp xếp nếu có từ khóa hoặc sắp xếp theo field nếu có
+      const sortOption = keyword
+        ? { createdAt: -1 }  // Sắp xếp theo thời gian tạo nếu tìm kiếm theo từ khóa
+        : sort && sort.field && sort.order
+        ? { [sort.field]: sort.order === "asc" ? 1 : -1 }
+        : { createdAt: -1 };
+
+      // Truy vấn dữ liệu với phân trang
+      const questions = await Question.find(query)
+        .limit(Math.max(1, Math.min(Number(limit), 100))) // Giới hạn tối đa 100
+        .skip((Math.max(1, Number(page)) - 1) * limit)
+        .sort(sortOption);
+
+      // Phản hồi kết quả
+      resolve({
+        status: "OK",
+        message: "Tìm kiếm thành công",
+        data: questions,
+        total: totalQuestions,
+        pageCurrent: Number(page),
+        totalPage: Math.ceil(totalQuestions / limit),
+      });
+    } catch (error) {
+      reject({
+        status: "FAIL",
+        message: "Lỗi xảy ra khi tìm kiếm câu hỏi",
+        error: error.message,
+      });
+    }
+  });
+};
 
 module.exports = {
   updateViewCount,
@@ -524,5 +591,6 @@ module.exports = {
   getQuestionsFromUserAnswers,
   addVote,
   findByIdAndUpdate,toggleActiveQues,
-  getStatisticByUser
+  getStatisticByUser,
+  searchQuestion,
 };
