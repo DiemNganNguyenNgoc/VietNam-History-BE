@@ -5,14 +5,16 @@ const createComment = (newComment) => {
     const {
       content,
       user,
-      answer
+      answer,
+      question
     } = newComment;
 
   try {
   const createdComment = await Comment.create({
     content,
     user,
-    answer
+    answer,
+    question
       });
       if (createdComment) {
         resolve({
@@ -60,8 +62,7 @@ const deleteComment = async (id) => {
         message: "Comment not found.",
       };
     }
-
-    await comment.deleteOne();
+    await Comment.findByIdAndDelete(id);
     return {
       status: "OK",
       message: "Comment deleted successfully.",
@@ -94,7 +95,7 @@ const getDetailsComment = async (id) => {
 
 const getAllComment = async (postId) => {
   try {
-    const comments = await Comment.find({ answer: postId })
+    const comments = await Comment.find({ question: postId })
       .populate("user")
       .sort({ createdAt: -1 });
 
@@ -124,6 +125,17 @@ const getCommentsByAnswer = async (answerId) => {
   }
 };
 
+const getCommentsByUser = async (userId) => {
+  try {
+    const comments = await Comment.find({user : userId});
+
+    if (!comments) throw new Error("Comment not found.");
+    return comments;
+  } catch (err) {
+    throw new Error(err.message);
+  }
+};
+
 module.exports = {
   createComment,
   updateComment,
@@ -131,4 +143,5 @@ module.exports = {
   getDetailsComment,
   getAllComment,
   getCommentsByAnswer,
+  getCommentsByUser,
 };

@@ -7,13 +7,13 @@ const createComment = async (req, res) => {
       content,
       user,
       answer,
+      question
     } = req.body;
     console.log("req.body", req.body);
 
     if (
       !content ||
-      !user ||
-      !answer
+      !user 
     ) {
       //check have
       return res.status(200).json({
@@ -98,6 +98,35 @@ const getCommentsByAnswer = async (req, res) => {
   }
 };
 
+const getCommentsByQuestion = async (req, res) => {
+  try {
+    const response = await CommentService.getCommentsByQuestion(
+      req.params.questionId
+    );
+    return res.status(200).json(response);
+  } catch (err) {
+    return res.status(500).json({
+      status: "ERR",
+      message: err.message,
+    });
+  }
+};
+
+const getCommentsByUser = async (req, res) => {
+  try {
+    const response = await CommentService.getDetailsComment(
+      req.params.userID
+    );
+    return res.status(200).json(response);
+  } catch (err) {
+    return res.status(500).json({
+      status: "ERR",
+      message: err.message,
+    });
+  }
+};
+
+
 module.exports = {
   createComment,
   updateComment,
@@ -105,4 +134,6 @@ module.exports = {
   getDetailsComment,
   getAllComment,
   getCommentsByAnswer,
+  getCommentsByUser,
+  getCommentsByQuestion
 };

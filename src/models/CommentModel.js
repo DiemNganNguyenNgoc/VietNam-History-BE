@@ -19,7 +19,14 @@ const commentSchema = new mongoose.Schema(
         answer: {
             type: mongoose.Schema.Types.ObjectId, 
             ref: 'Answer',
-            require: true
+            require: false,
+            default: ""
+        },
+        question: {
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: 'Question',
+            require: false,
+            default: ""
         },
     },
     {
