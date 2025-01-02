@@ -24,4 +24,5 @@ router.get("/comments/:answerId", CommentController.getCommentsByAnswer);
 // Xem bình luận của một người dùng
 router.get("/byUser/:userId", CommentController.getCommentsByUser);
 
+
 module.exports = router;
