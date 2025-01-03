@@ -114,8 +114,8 @@ const getCommentsByQuestion = async (req, res) => {
 
 const getCommentsByUser = async (req, res) => {
   try {
-    const response = await CommentService.getDetailsComment(
-      req.params.userID
+    const response = await CommentService.getCommentsByUser(
+      req.params.userId
     );
     return res.status(200).json(response);
   } catch (err) {
