@@ -95,7 +95,7 @@ const getDetailsComment = async (id) => {
 
 const getAllComment = async (postId) => {
   try {
-    const comments = await Comment.find({ question: postId })
+    const comments = await Comment.find({ question: postId,  answer: null })
       .populate("user")
       .sort({ createdAt: -1 });
 
@@ -111,7 +111,7 @@ const getAllComment = async (postId) => {
 
 const getCommentsByAnswer = async (answerId) => {
   try {
-    const comments = await Comment.find({ answer: answerId })
+    const comments = await Comment.find({ question: answerId })
       .populate("user")
       .sort({ createdAt: -1 });
 
