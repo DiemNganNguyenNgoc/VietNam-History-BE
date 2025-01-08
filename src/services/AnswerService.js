@@ -98,17 +98,17 @@ const deleteAnswer = (id) => {
 
       const answer = await Answer.find({ question: id });
 
-        const answerOwnerId = answer.userAns;
-        
-        const answerOwner = await User.findById(answerOwnerId);
+      const answerOwnerId = answer.userAns;
 
-        if (answerOwner) {
-          answerOwner.answerCount = Math.max(0, answerOwner.answerCount - 1); 
-          await answerOwner.save();
-        }
+      const answerOwner = await User.findById(answerOwnerId);
 
-        const deletedComments = await Comment.deleteMany({ answer: answer._id });
-        
+      if (answerOwner) {
+        answerOwner.answerCount = Math.max(0, answerOwner.answerCount - 1);
+        await answerOwner.save();
+      }
+
+      const deletedComments = await Comment.deleteMany({ answer: answer._id });
+
 
       await Answer.findByIdAndDelete(id);
 
@@ -122,7 +122,7 @@ const deleteAnswer = (id) => {
   });
 };
 
-// Lấy câu hỏi theo ID người dùng
+// Lấy câu trả lời theo ID người dùng
 const getAnswerByUserId = (userId, limit, page) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -135,13 +135,13 @@ const getAnswerByUserId = (userId, limit, page) => {
         return;
       }
       //console.log("USER", userId)
-      // Tính tổng số câu hỏi của người dùng
+      // Tính tổng số câu trả lời của người dùng
       const totalAnswers = await Answer.countDocuments(
-        { userAns: userId } );
-   
-      // Lấy danh sách câu hỏi theo userId
+        { userAns: userId });
+
+      // Lấy danh sách Câu trả lời theo userId
       const userAnswers = await Answer.find({ userAns: userId })
-     // console.log("USERANS", userAnswers)
+      
         .limit(limit)
         .skip(page * limit)
         .sort({ createdAt: -1 }); // Sắp xếp theo thời gian tạo giảm dần
@@ -153,7 +153,7 @@ const getAnswerByUserId = (userId, limit, page) => {
           message: "No answer found for this user",
           data: [],
         });
-       
+
         return;
       }
 
@@ -171,7 +171,7 @@ const getAnswerByUserId = (userId, limit, page) => {
     }
   });
 };
-// tim ID cau hoi
+// tim ID cau trả lời
 const findById = async (id) => {
   try {
     const question = await Answer.findById(id); // Mongoose method to find by ID
@@ -279,9 +279,9 @@ const getAnswersByQuestionId = (questionId, filterActive) => {
       // Create the query object
       let query = {
         question: new mongoose.Types.ObjectId(questionId),
-        active:true
+        active: true
       };
-     
+
 
       const answers = await Answer.find(query);
 
@@ -316,7 +316,7 @@ const getAnswersByQuestionIdAdmin = (questionId) => {
       }
 
       const answers = await Answer.find({
-        question:new mongoose.Types.ObjectId(questionId),
+        question: new mongoose.Types.ObjectId(questionId),
       });
 
       if (!answers || answers.length === 0) {
@@ -338,31 +338,6 @@ const getAnswersByQuestionIdAdmin = (questionId) => {
   });
 };
 
-const getQuestionByAnswer = async (quesId) => {
-  try {
-    // Kiểm tra ID trước khi truy vấn
-    if (!quesId) {
-      throw new Error("Question ID is required.");
-    }
-
-    // Tìm câu hỏi dựa trên ID
-    const question = await Question.findById(quesId);
-
-    if (!question) {
-      throw new Error("Question not found.");
-    }
-
-    return {
-      status: "OK",
-      data: question,
-    };
-  } catch (err) {
-    return {
-      status: "ERROR",
-      message: err.message,
-    };
-  }
-};
 
 
 const toggleActiveAns = async (answerId) => {
@@ -403,7 +378,7 @@ const getStatisticByUser = async ({ userAns, year, month }) => {
   } catch (err) {
     throw new Error(err.message);
   };
-  };
+};
 
 const addVote = ({ answerId, userId, isUpVote }) => {
   return new Promise((resolve, reject) => {
@@ -515,7 +490,6 @@ module.exports = {
   deleteAnswer,
   getDetailsAnswer,
   getAllAnswer,
-  getQuestionByAnswer,
   getAnswersByQuestionId,
   toggleActiveAns,
   getAnswersByQuestionIdAdmin,
