@@ -365,6 +365,61 @@ const getQuestionsFromUserAnswers = (userId) => {
   });
 };
 
+const getQuestionsFromUserComments = (userId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Kiểm tra xem userId có tồn tại hay không
+      if (!userId) {
+        resolve({
+          status: "FAIL",
+          message: "User ID is required",
+        });
+        return;
+      }
+
+      // Lấy tất cả ID của câu trả lời từ userId
+      const userComments = await Comment.find({ user: userId, question: { $exists: true, $ne: null } }); // userAns là trường chứa ID của người dùng
+      const questionIds = userComments.map((comment) => comment.question); // Lấy danh sách các questionId từ câu trả lời
+
+      // Nếu không có câu trả lời nào
+      if (questionIds.length === 0) {
+        resolve({
+          status: "OK",
+          message: "No answers found for this user",
+          data: [],
+        });
+        return;
+      }
+
+      // Lấy toàn bộ thông tin các câu hỏi dựa trên questionIds
+      const questions = await Question.find({ _id: { $in: questionIds } });
+
+      const result = questions.map((question) => {
+        const comment = userComments.find(
+          (comment) => comment.question.toString() === question._id.toString()
+        );
+        return {
+          ...question._doc,
+          updatedAt: comment ? comment.updatedAt : null, // Thêm thời gian cập nhật của câu trả lời
+        };
+      });
+
+      // Trả về kết quả
+      resolve({
+        status: "OK",
+        message: "Questions retrieved successfully from user comments",
+        data: result,
+      });
+    } catch (e) {
+      reject({
+        status: "FAIL",
+        message: "Error retrieving questions from user comments",
+        error: e.message,
+      });
+    }
+  });
+};
+
 const addVote = ({ questionId, userId, isUpVote }) => {
   return new Promise((resolve, reject) => {
     // Kiểm tra câu hỏi có tồn tại không
@@ -589,6 +644,7 @@ module.exports = {
   findByIdAndUpdate,
   toggleActiveQues,
   getQuestionsFromUserAnswers,
+  getQuestionsFromUserComments,
   addVote,
   findByIdAndUpdate,toggleActiveQues,
   getStatisticByUser,

@@ -127,7 +127,7 @@ const getCommentsByAnswer = async (answerId) => {
 
 const getCommentsByUser = async (userId) => {
   try {
-    const comments = await Comment.find({user : userId});
+    const comments = await Comment.find({user : userId, question: { $ne: null }});
 
     if (!comments) throw new Error("Comment not found.");
     return comments;

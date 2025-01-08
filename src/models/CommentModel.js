@@ -25,8 +25,8 @@ const commentSchema = new mongoose.Schema(
         question: {
             type: mongoose.Schema.Types.ObjectId, 
             ref: 'Question',
-            require: false,
-            default: ""
+            require: true,
+            
         },
     },
     {

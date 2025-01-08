@@ -34,4 +34,6 @@ router.put("/update-view/:id/:userId", questionController.updateViewCount);
 
 router.get("/search", questionController.searchQuestion);
 
+router.get("/comments/user/:userId", questionController.getQuestionsFromUserComments);
+
 module.exports = router;
