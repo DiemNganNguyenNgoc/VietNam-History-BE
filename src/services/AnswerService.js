@@ -1,6 +1,9 @@
 const Answer = require("../models/AnswerModel");
 const mongoose = require("mongoose");
 const AnswerVote = require('../models/AnswerVoteModel');
+const Question = require("../models/QuestionModel");
+const User = require("../models/UserModel");
+const Comment = require("../models/CommentModel");
 //tạo Answer
 const createAnswer = (newAnswer) => {
   return new Promise(async (resolve, reject) => {
@@ -80,30 +83,102 @@ const updateAnswer = (id, data) => {
 const deleteAnswer = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      //check Answer created
-      const checkAnswer = await Answer.findOne({
-        _id: id,
-      });
-      //console.log("checkAnswer", checkAnswer);
+      console.log("ID", id)
+      const checkAnswer = await Answer.findOne({ _id: id });
 
-      //nếu Answer ko tồn tại
-      if (checkAnswer === null) {
+      if (!checkAnswer) {
         resolve({
           status: "OK",
-          message: "The Answer is not defined",
+          message: "The Question is not defined",
         });
+        return;
       }
 
+      // const questionOwnerId = checkQuestio.userQues;
+
+      const answer = await Answer.find({ question: id });
+
+        const answerOwnerId = answer.userAns;
+        
+        const answerOwner = await User.findById(answerOwnerId);
+
+        if (answerOwner) {
+          answerOwner.answerCount = Math.max(0, answerOwner.answerCount - 1); 
+          await answerOwner.save();
+        }
+
+        const deletedComments = await Comment.deleteMany({ answer: answer._id });
+        
+
       await Answer.findByIdAndDelete(id);
-      //console.log("updatedAnswer", updatedAnswer);
+
       resolve({
         status: "OK",
-        message: "DELETE Answer IS SUCCESS",
+        message: "DELETE Answer IS SUCCESS, along with associated answers and comments",
       });
     } catch (e) {
       reject(e);
     }
   });
+};
+
+// Lấy câu hỏi theo ID người dùng
+const getAnswerByUserId = (userId, limit, page) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Kiểm tra xem userId có tồn tại hay không
+      if (!userId) {
+        resolve({
+          status: "FAIL",
+          message: "User ID is required",
+        });
+        return;
+      }
+      //console.log("USER", userId)
+      // Tính tổng số câu hỏi của người dùng
+      const totalAnswers = await Answer.countDocuments(
+        { userAns: userId } );
+   
+      // Lấy danh sách câu hỏi theo userId
+      const userAnswers = await Answer.find({ userAns: userId })
+     // console.log("USERANS", userAnswers)
+        .limit(limit)
+        .skip(page * limit)
+        .sort({ createdAt: -1 }); // Sắp xếp theo thời gian tạo giảm dần
+
+      // Kiểm tra kết quả
+      if (userAnswers.length === 0) {
+        resolve({
+          status: "OK",
+          message: "No answer found for this user",
+          data: [],
+        });
+       
+        return;
+      }
+
+      // Trả về kết quả
+      resolve({
+        status: "OK",
+        message: "Answers retrieved successfully",
+        data: userAnswers,
+        total: totalAnswers,
+        pageCurrent: Number(page + 1),
+        totalPage: Math.ceil(totalAnswers / limit),
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+// tim ID cau hoi
+const findById = async (id) => {
+  try {
+    const question = await Answer.findById(id); // Mongoose method to find by ID
+    return question;
+  } catch (error) {
+    throw new Error("Error finding question: " + error.message);
+  }
 };
 
 //get details Answer
@@ -263,16 +338,32 @@ const getAnswersByQuestionIdAdmin = (questionId) => {
   });
 };
 
-const getQuestionByAnswer = async (answerId) => {
+const getQuestionByAnswer = async (quesId) => {
   try {
-    const question = await Answer.findById(answerId);
+    // Kiểm tra ID trước khi truy vấn
+    if (!quesId) {
+      throw new Error("Question ID is required.");
+    }
 
-    if (!question) throw new Error("Question not found.");
-    return question;
+    // Tìm câu hỏi dựa trên ID
+    const question = await Question.findById(quesId);
+
+    if (!question) {
+      throw new Error("Question not found.");
+    }
+
+    return {
+      status: "OK",
+      data: question,
+    };
   } catch (err) {
-    throw new Error(err.message);
+    return {
+      status: "ERROR",
+      message: err.message,
+    };
   }
 };
+
 
 const toggleActiveAns = async (answerId) => {
   try {
@@ -430,4 +521,6 @@ module.exports = {
   getAnswersByQuestionIdAdmin,
   getStatisticByUser,
   addVote,
+  findById,
+  getAnswerByUserId
 };

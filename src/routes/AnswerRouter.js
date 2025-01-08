@@ -19,12 +19,12 @@ router.get("/get-detail-answer/:id", answerController.getDetailsAnswer);
 //router.get("/get-all-answer/:postId", answerController.getAllAnswer);
 
 // Xem câu hỏi của một câu trả lời
-router.get("/answers/:id", answerController.getQuestionByAnswer);
+router.get("/get-question-by-answer/:id", answerController.getQuestionByAnswer);
 // Xem câu hỏi của một câu trả lời
 router.get("/get-by-question/:questionId", answerController.getAnswersByQuestionId);
 router.get("/admin/get-by-question/:questionId", answerController.getAnswersByQuestionIdAdmin);
 router.put("/toggle-active/:id",  answerController.toggleActiveAns);
 router.post("/:id/vote", answerController.addVote);
-
 router.get("/get-by-statistic", answerController.getStatisticByUser);
+router.get("/user/:userId",  answerController.getAnswersByUserId);
 module.exports = router;

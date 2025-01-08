@@ -62,21 +62,36 @@ const updateAnswer = async (req, res) => {
 //delete Answer
 const deleteAnswer = async (req, res) => {
   try {
-    const AnswerId = req.params.id;
-    //const token = req.headers;
-
-    if (!AnswerId) {
-      return res.status(200).json({
+    const answerId = req.params.id;
+    console.log("ID", answerId)
+    // Kiểm tra nếu ID câu tra loi không tồn tại
+    if (!answerId) {
+      return res.status(400).json({
         status: "ERR",
-        message: "The AnswerId is required",
+        message: "Answer ID is required",
+      });
+    }
+    
+    // Gọi service để xóa câu hỏi cùng các answer và comment liên quan
+    const response = await AnswerService.deleteAnswer(answerId)
+
+    if (response.status === "OK") {
+      return res.status(200).json({
+        status: "OK",
+        message: response.message,
       });
     }
 
-    const response = await AnswerService.deleteAnswer(AnswerId);
-    return res.status(200).json(response);
-  } catch (e) {
     return res.status(404).json({
-      message: e,
+      status: "ERR",
+      message: "Answer not found",
+    });
+  } catch (e) {
+    console.error("Error deleting question: ", e);
+    return res.status(500).json({
+      status: "ERR",
+      message:
+        "An error occurred while deleting the Answer and associated data.",
     });
   }
 };
@@ -122,8 +137,11 @@ const getAllAnswer = async (req, res) => {
 
 const getQuestionByAnswer = async (req, res) => {
   try {
+   
+   const quesId=question
+   console.log(quesId)
     const question = await AnswerService.getQuestionByAnswer(
-      req.params.questionId
+      
     );
     res.status(200).json({
       status: "OK",
@@ -266,6 +284,44 @@ const addVote = (req, res) => {
     });
 };
 
+// Get Questions by User ID
+const getAnswersByUserId = async (req, res) => {
+  try {
+    const { userId } = req.params;
+  
+    const { limit, page } = req.query;
+
+    if (!userId) {
+      return res.status(400).json({
+        status: "ERR",
+        message: "User ID is required",
+      });
+    }
+
+    const response = await AnswerService.getAnswerByUserId(
+      userId,
+      Number(limit) || 20,
+      Number(page) || 0
+    );
+    //console.log("RES ANS", response)
+    if (!response || response.length === 0) {
+      return res.status(404).json({
+        status: "ERR",
+        message: "No answers found for the given user ID",
+      });
+    }
+
+    return res.status(200).json(response);
+  } catch (e) {
+    console.error("Error fetching questions by user ID: ", e);
+    return res.status(500).json({
+      status: "ERR",
+      message: "An error occurred while fetching the answers by user ID.",
+      error: e.message,
+    });
+  }
+};
+
 module.exports = {
   createAnswer,
   updateAnswer,
@@ -278,4 +334,5 @@ module.exports = {
   toggleActiveAns,
   getAnswersByQuestionIdAdmin,
   addVote,
+  getAnswersByUserId
 };
