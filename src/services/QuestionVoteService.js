@@ -68,18 +68,17 @@ const deleteVote = (userId, questionId) => {
 };
 
 // Lấy danh sách vote theo câu hỏi
-const getVotesByQuestion = (questionId) => {
+const getVote = (userId, questionId) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const votes = await QuestionVote.find({ question: questionId }).populate(
-        "user",
-        "name"
-      );
-
+      const vote = await QuestionVote.findOne({
+        user: userId,
+        question: questionId,
+      });
       resolve({
         status: "OK",
-        message: "Get votes successfully",
-        data: votes,
+        message: "Get vote successfully",
+        data: vote,
       });
     } catch (e) {
       reject(e);
@@ -201,7 +200,7 @@ const getVotesAndQuestionsFromUser = (userId) => {
 module.exports = {
   createOrUpdateVote,
   deleteVote,
-  getVotesByQuestion,
+  getVote,
   checkVoteStatus,
   getVoteStats,
   getVotesAndQuestionsFromUser,

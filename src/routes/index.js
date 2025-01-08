@@ -11,6 +11,7 @@ const Answer = require("./AnswerRouter");
 const AnswerVoteRouter = require("./AnswerVoteRouter");
 const Saved = require("./SavedRouter");
 const CommentRouter = require("./CommentRouter");
+const NotificationRouter = require("./NotificationRouter");
 
 const routes = (app) => {
   app.use("/api/user", UserRouter);
@@ -26,6 +27,7 @@ const routes = (app) => {
   app.use("/api/answer-report", AnswerReportRouter);
   app.use("/api/comment-report", CommentReportRouter);
   app.use("/api/answer-vote", AnswerVoteRouter);
+  app.use("/api/notification", NotificationRouter);
 };
 
 module.exports = routes;

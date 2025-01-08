@@ -1,18 +1,18 @@
 const QuestionVoteService = require("../services/QuestionVoteService");
 
 // Lấy tất cả các vote của câu hỏi
-const getVotesByQuestion = async (req, res) => {
+const getVote = async (req, res) => {
   try {
-    const questionId = req.params.id;
+    const { userId, questionId } = req.params;
 
-    if (!questionId) {
+    if (!userId || !questionId) {
       return res.status(200).json({
         status: "ERR",
-        message: "The 'questionId' is required",
+        message: "The 'questionId' or 'userId' is required",
       });
     }
 
-    const response = await QuestionVoteService.getVotesByQuestion(questionId);
+    const response = await QuestionVoteService.getVote(userId, questionId);
     return res.status(200).json(response);
   } catch (e) {
     return res.status(404).json({
@@ -84,7 +84,7 @@ const getVotesAndQuestionsFromUser = async (req, res) => {
 };
 
 module.exports = {
-  getVotesByQuestion,
+  getVote,
   checkVoteStatus,
   getVoteStats,
   getVotesAndQuestionsFromUser,
