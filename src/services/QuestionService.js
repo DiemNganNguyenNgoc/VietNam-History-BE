@@ -73,6 +73,7 @@ const updateQuestion = (id, data) => {
 };
 
 // Xóa câu hỏi
+// Xóa câu hỏi
 const deleteQuestion = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -86,41 +87,32 @@ const deleteQuestion = (id) => {
         return;
       }
 
-      const questionOwnerId = checkQuestion.user;
+      const questionOwnerId = checkQuestion.userQues;
 
-      // Xóa các câu trả lời liên quan đến câu hỏi
+      const answers = await Answer.find({ question: id });
+
       const deletedAnswers = await Answer.deleteMany({ question: id });
-      console.log(`${deletedAnswers.deletedCount} answers deleted.`);
 
-      // Cập nhật số lượng câu trả lời cho người sở hữu câu trả lời
-      if (deletedAnswers.deletedCount > 0) {
-        const answers = await Answer.find({ question: id });
-        for (const answer of answers) {
-          const answerOwnerId = answer.user;
-          const answerOwner = await User.findById(answerOwnerId);
-          if (answerOwner) {
-            answerOwner.ansCount = Math.max(0, answerOwner.ansCount - 1);
-            await answerOwner.save();
-            console.log(`User ansCount updated: ${answerOwner.ansCount}`);
-          }
+      for (const answer of answers) {
+        const answerOwnerId = answer.userAns;
+        
+        const answerOwner = await User.findById(answerOwnerId);
 
-          // Xóa các bình luận liên quan đến câu trả lời
-          const deletedComments = await Comment.deleteMany({ answer: answer._id });
-          console.log(`${deletedComments.deletedCount} comments deleted.`);
+        if (answerOwner) {
+          answerOwner.answerCount = Math.max(0, answerOwner.answerCount - 1); 
+          await answerOwner.save();
         }
+
+        const deletedComments = await Comment.deleteMany({ answer: answer._id });
       }
 
-      // Cập nhật số lượng câu hỏi cho người sở hữu câu hỏi
       const questionOwner = await User.findById(questionOwnerId);
       if (questionOwner) {
         questionOwner.quesCount = Math.max(0, questionOwner.quesCount - 1);
         await questionOwner.save();
-        console.log(`User quesCount updated: ${questionOwner.quesCount}`);
       }
 
-      // Xóa câu hỏi
       await Question.findByIdAndDelete(id);
-      console.log("Question deleted.");
 
       resolve({
         status: "OK",
@@ -131,6 +123,8 @@ const deleteQuestion = (id) => {
     }
   });
 };
+
+
 
 
 // Lấy chi tiết câu hỏi
