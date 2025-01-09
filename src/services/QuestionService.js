@@ -91,19 +91,19 @@ const deleteQuestion = (id) => {
 
       const answers = await Answer.find({ question: id });
 
-       await Answer.deleteMany({ question: id });
+      await Answer.deleteMany({ question: id });
 
       for (const answer of answers) {
         const answerOwnerId = answer.userAns;
-        
+
         const answerOwner = await User.findById(answerOwnerId);
 
         if (answerOwner) {
-          answerOwner.answerCount = Math.max(0, answerOwner.answerCount - 1); 
+          answerOwner.answerCount = Math.max(0, answerOwner.answerCount - 1);
           await answerOwner.save();
         }
 
-         await Comment.deleteMany({  question: id  });
+        await Comment.deleteMany({ question: id });
       }
 
       const questionOwner = await User.findById(questionOwnerId);
@@ -157,7 +157,7 @@ const getAllQuestion = (limit, page, sort, filter, tag, active) => {
   return new Promise(async (resolve, reject) => {
     try {
       let query = {};
-      
+
       // Thêm điều kiện lọc theo tag
       if (tag) {
         query.tags = tag;
@@ -182,14 +182,14 @@ const getAllQuestion = (limit, page, sort, filter, tag, active) => {
         objectSort[sort[1]] = sort[0];
         const allQuestionSort = await Question.find(query)
           .limit(limit)
-          .skip((page-1) * limit)
+          .skip((page - 1) * limit)
           .sort(objectSort);
         resolve({
           status: "OK",
           message: "Get all Question IS SUCCESS",
           data: allQuestionSort,
           total: totalQuestion,
-          pageCurrent: Number(page ),
+          pageCurrent: Number(page),
           totalPage: Math.ceil(totalQuestion / limit),
         });
         return;
@@ -198,13 +198,13 @@ const getAllQuestion = (limit, page, sort, filter, tag, active) => {
       // Lấy danh sách câu hỏi không cần sort
       const allQuestion = await Question.find(query)
         .limit(limit)
-        .skip((page-1) * limit)
+        .skip((page - 1) * limit)
       resolve({
         status: "OK",
         message: "Get all Question IS SUCCESS",
         data: allQuestion,
         total: totalQuestion,
-        pageCurrent: Number(page ),
+        pageCurrent: Number(page),
         totalPage: Math.ceil(totalQuestion / limit),
       });
     } catch (e) {
@@ -598,8 +598,8 @@ const searchQuestion = async (searchParams) => {
       const sortOption = keyword
         ? { createdAt: -1 }  // Sắp xếp theo thời gian tạo nếu tìm kiếm theo từ khóa
         : sort && sort.field && sort.order
-        ? { [sort.field]: sort.order === "asc" ? 1 : -1 }
-        : { createdAt: -1 };
+          ? { [sort.field]: sort.order === "asc" ? 1 : -1 }
+          : { createdAt: -1 };
 
       // Truy vấn dữ liệu với phân trang
       const questions = await Question.find(query)
@@ -626,7 +626,27 @@ const searchQuestion = async (searchParams) => {
   });
 };
 
+const updateReportCount = async (id, count) => {
+  try {
+    const question = await Question.findById(id);
+
+    if (!question) {
+      return null; // Không tìm thấy câu hỏi
+    }
+
+    // Nếu userId không phải là của người tạo câu hỏi, tăng view
+
+    question.reportCount = count;
+    await question.save();
+
+    return question;
+  } catch (error) {
+    throw error; // Ném lỗi để controller xử lý
+  }
+};
+
 module.exports = {
+  updateReportCount,
   updateViewCount,
   createQuestion,
   updateQuestion,
@@ -640,7 +660,7 @@ module.exports = {
   getQuestionsFromUserAnswers,
   getQuestionsFromUserComments,
   addVote,
-  findByIdAndUpdate,toggleActiveQues,
+  findByIdAndUpdate, toggleActiveQues,
   getStatisticByUser,
   searchQuestion,
 };

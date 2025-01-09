@@ -3,16 +3,11 @@ const QuestionReportService = require("../services/QuestionReportService");
 const createQuestionReport = async (req, res) => {
   try {
     const { user, question } = req.body;
+    const reportThreshold = 2; // Ngưỡng để vô hiệu hóa câu hỏi
 
-    if (!user || !question) {
-      return res.status(400).json({
-        status: "ERR",
-        message: "User ID and Question ID are required.",
-      });
-    }
+    const result = await QuestionReportService.createQuestionReport({ user, question }, reportThreshold);
 
-    const response = await QuestionReportService.createQuestionReport(req.body);
-    return res.status(201).json(response);
+    return res.status(result.status === "OK" ? 200 : 400).json(result);
   } catch (error) {
     return res.status(500).json({
       status: "ERR",
@@ -20,6 +15,9 @@ const createQuestionReport = async (req, res) => {
     });
   }
 };
+
+
+
 
 const getAllReports = async (req, res) => {
   try {
@@ -66,4 +64,5 @@ module.exports = {
   getAllReports,
   getReportById,
   deleteReport,
+  
 };

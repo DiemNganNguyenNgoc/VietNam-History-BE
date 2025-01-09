@@ -2,44 +2,43 @@ const QuestionReport = require("../models/QuestionReportModel");
 const Question = require("../models/QuestionModel");
 const User = require("../models/UserModel");
 
-const createQuestionReport = async (data) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const { user, question } = data;
+const createQuestionReport = async (data, reportThreshold) => {
+  const { user, question } = data;
 
-      // Kiểm tra nếu đã tồn tại report giữa user và question
-      const existingReport = await QuestionReport.findOne({ user, question });
-      if (existingReport) {
-        return resolve({
-          status: "ERR",
-          message: "You have already reported this question.",
-        });
-      }
+  // Kiểm tra nếu đã tồn tại report giữa user và question
+  const existingReport = await QuestionReport.findOne({ user, question });
+  if (existingReport) {
+    return {
+      status: "ERR",
+      message: "You have already reported this question.",
+    };
+  }
 
-      // Tạo mới report
-      const newReport = await QuestionReport.create({ user, question });
+  // Tạo mới report
+  const newReport = await QuestionReport.create({ user, question });
 
-      console.log("newReport", newReport);
+  // Tăng reportCount của Question
+  const updatedQuestion = await Question.findByIdAndUpdate(
+    question,
+    { $inc: { reportCount: 1 } },
+    { new: true }
+  );
 
-      // Tăng reportCount của Question
-      await Question.findByIdAndUpdate(question, { $inc: { reportCount: 1 } });
+  // Nếu reportCount vượt ngưỡng, đặt active = false
+  if (updatedQuestion.reportCount > reportThreshold) {
+    await Question.findByIdAndUpdate(question, { active: false });
+  }
 
-      // Tăng reportCount của User
-      await User.findByIdAndUpdate(user, { $inc: { reportCount: 1 } });
+  // Tăng reportCount của User
+  await User.findByIdAndUpdate(user, { $inc: { reportCount: 1 } });
 
-      resolve({
-        status: "OK",
-        message: "Question reported successfully.",
-        data: newReport,
-      });
-    } catch (e) {
-      reject({
-        status: "ERR",
-        message: e.message,
-      });
-    }
-  });
+  return {
+    status: "OK",
+    message: "Question reported successfully.",
+    data: newReport,
+  };
 };
+
 
 const getAllReports = async () => {
   return new Promise(async (resolve, reject) => {
@@ -110,4 +109,5 @@ module.exports = {
   getAllReports,
   getReportById,
   deleteReport,
+  
 };

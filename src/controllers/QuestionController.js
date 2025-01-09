@@ -402,6 +402,38 @@ const updateViewCount = async (req, res) => {
   }
 };
 
+const updateReportCount = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { count } = req.body;
+
+    // Kiểm tra id và userId có được truyền vào không
+    if (!id ) {
+      return res.status(400).json({
+        message: "Invalid parameters. 'id' and 'userId' are required.",
+      });
+    }
+
+    const updatedQues = await QuestionService.updateReportCount(id, count);
+
+    if (updatedQues) {
+      return res.status(200).json({
+        message: "ViewCount updated successfully",
+        data: updatedQues,
+      });
+    } else {
+      return res.status(404).json({
+        message: "Question not found",
+      });
+    }
+  } catch (error) {
+    console.error("Error updating view count:", error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+    })
+  }
+};
+
 const searchQuestion = async (req, res) => {
   try {
     // Destructure query parameters from the request
@@ -434,6 +466,7 @@ const searchQuestion = async (req, res) => {
 };
 
 module.exports = {
+  updateReportCount,
   updateViewCount,
   createQuestion,
   updateQuestion,
