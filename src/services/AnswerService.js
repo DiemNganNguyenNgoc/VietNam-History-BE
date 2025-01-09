@@ -83,7 +83,7 @@ const updateAnswer = (id, data) => {
 const deleteAnswer = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      console.log("ID", id)
+     
       const checkAnswer = await Answer.findOne({ _id: id });
 
       if (!checkAnswer) {
@@ -96,8 +96,8 @@ const deleteAnswer = (id) => {
 
       // const questionOwnerId = checkQuestio.userQues;
 
-      const answer = await Answer.find({ question: id });
-
+      const answer = await Answer.findOne({_id : id });
+console.log("W",answer.id)
       const answerOwnerId = answer.userAns;
 
       const answerOwner = await User.findById(answerOwnerId);
@@ -107,7 +107,7 @@ const deleteAnswer = (id) => {
         await answerOwner.save();
       }
 
-      const deletedComments = await Comment.deleteMany({ answer: answer._id });
+      const deletedComments = await Comment.deleteMany({ answer: answer.id});
 
 
       await Answer.findByIdAndDelete(id);
