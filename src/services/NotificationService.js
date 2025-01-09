@@ -42,6 +42,10 @@ class NotificationService {
           }
         })
         .populate({
+          path: 'metadata.follow_id', 
+          select: 'name',
+        })
+        .populate({
           path: 'user_id', // Liên kết đến bảng User để lấy tên người nhận thông báo
           select: 'name' // Lấy tên người nhận thông báo
         })

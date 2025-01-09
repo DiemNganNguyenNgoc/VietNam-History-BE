@@ -17,7 +17,7 @@ const notificationSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ["answer", "comment", "vote"], // Loại thông báo (trả lời, bình luận, vote)
+      enum: ["answer", "comment", "vote", "follow"], // Loại thông báo (trả lời, bình luận, vote)
       required: true,
     },
     metadata: {
@@ -34,6 +34,11 @@ const notificationSchema = new mongoose.Schema(
       quesVote_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "QuestionVote",
+        required: false,
+      },
+      follow_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
         required: false,
       },
     },
