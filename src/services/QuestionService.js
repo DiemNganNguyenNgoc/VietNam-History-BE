@@ -91,7 +91,7 @@ const deleteQuestion = (id) => {
 
       const answers = await Answer.find({ question: id });
 
-      const deletedAnswers = await Answer.deleteMany({ question: id });
+       await Answer.deleteMany({ question: id });
 
       for (const answer of answers) {
         const answerOwnerId = answer.userAns;
@@ -103,7 +103,7 @@ const deleteQuestion = (id) => {
           await answerOwner.save();
         }
 
-        const deletedComments = await Comment.deleteMany({ answer: answer._id });
+         await Comment.deleteMany({  question: id  });
       }
 
       const questionOwner = await User.findById(questionOwnerId);
