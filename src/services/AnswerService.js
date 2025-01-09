@@ -107,7 +107,7 @@ console.log("W",answer.id)
         await answerOwner.save();
       }
 
-      await Comment.deleteMany({ answer: answer.id});
+      const deletedComments = await Comment.deleteMany({ answer: answer.id});
 
 
       await Answer.findByIdAndDelete(id);
