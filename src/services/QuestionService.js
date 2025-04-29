@@ -48,20 +48,14 @@ const updateQuestion = (id, data) => {
         return;
       }
 
-      // Tăng answerCount lên 1
-      // const updatedLikeCount = checkQuestion.upVoteCount + 1;
-
-      // Cập nhật câu hỏi với answerCount mới và các trường dữ liệu khác (nếu cần)
-      const updatedQuestion = await QuestionService.findByIdAndUpdate(
+      // Update the question with the provided data
+      const updatedQuestion = await Question.findByIdAndUpdate(
         id,
-        {
-          // answerCount: updatedLikeCount, // Cập nhật answerCount
-          data, // Cập nhật các trường khác (title, content, note, tags, images)
-        },
-        { new: true } // Trả về câu hỏi đã cập nhật
+        { ...data },
+        { new: true } // Return the updated document
       );
 
-      return res.status(200).json({
+      resolve({
         status: "OK",
         message: "Question updated successfully",
         data: updatedQuestion,
@@ -131,7 +125,8 @@ const deleteQuestion = (id) => {
 const getDetailsQuestion = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const question = await Question.findOne({ _id: id });
+      const question = await Question.findOne({ _id: id })
+        .populate('linkedQuizzes', 'title description questions totalAttempts');
 
       if (question === null) {
         resolve({
@@ -181,6 +176,7 @@ const getAllQuestion = (limit, page, sort, filter, tag, active) => {
         const objectSort = {};
         objectSort[sort[1]] = sort[0];
         const allQuestionSort = await Question.find(query)
+          .populate('linkedQuizzes', 'title description questions totalAttempts')
           .limit(limit)
           .skip((page - 1) * limit)
           .sort(objectSort);
@@ -197,11 +193,13 @@ const getAllQuestion = (limit, page, sort, filter, tag, active) => {
 
       // Lấy danh sách câu hỏi không cần sort
       const allQuestion = await Question.find(query)
+        .populate('linkedQuizzes', 'title description questions totalAttempts')
         .limit(limit)
-        .skip((page - 1) * limit)
+        .skip((page - 1) * limit);
+
       resolve({
         status: "OK",
-        message: "Get all Question IS SUCCESS",
+        message: "Get all question success",
         data: allQuestion,
         total: totalQuestion,
         pageCurrent: Number(page),

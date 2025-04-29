@@ -36,7 +36,7 @@ const createQuestion = async (req, res) => {
 const updateQuestion = async (req, res) => {
   try {
     const questionId = req.params.id;
-    const { title, content, note, tags, images } = req.body;
+    const { title, content, note, tags, images, linkedQuizzes } = req.body;
 
     if (!questionId) {
       return res.status(400).json({
@@ -51,6 +51,7 @@ const updateQuestion = async (req, res) => {
       note,
       tags,
       images,
+      linkedQuizzes,
     });
     if (!response) {
       return res.status(404).json({

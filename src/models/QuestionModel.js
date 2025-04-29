@@ -31,6 +31,14 @@ const questionSchema = new mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId, // ID của tag từ bảng Tag
         ref: 'Tag', // Tham chiếu đến model 'Tag'
       }
+    ],
+    
+    // Field to store linked quizzes
+    linkedQuizzes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Quiz'
+      }
     ]
   },
   {
