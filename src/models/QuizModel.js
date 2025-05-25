@@ -51,4 +51,4 @@ quizSchema.index({ 'questions.type': 1 });
 quizSchema.index({ isActive: 1 });
 
 const Quiz = mongoose.model('Quiz', quizSchema);
-module.exports = Quiz; 
+module.exports = Quiz;

@@ -543,8 +543,11 @@ const updateViewCount = async (id, userId) => {
       return null; // Không tìm thấy câu hỏi
     }
 
-    // Nếu userId không phải là của người tạo câu hỏi, tăng view
-    if (question.userQues.toString() !== userId.toString()) {
+    // Check if userId exists in User collection
+    const userExists = await User.findById(userId);
+
+    // If user doesn't exist (possibly an admin) or not the creator, update view count
+    if (!userExists || (userExists && question.userQues.toString() !== userId.toString())) {
       question.view = (question.view || 0) + 1;
       await question.save();
     }
