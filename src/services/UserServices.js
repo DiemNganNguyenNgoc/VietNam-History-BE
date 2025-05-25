@@ -391,13 +391,13 @@ const filterUsers = async (filters) => {
   const query = {};
 
   if (filters.name) {
-    query.name = { $regex: filters.name, $options: "i" }; 
+    query.name = { $regex: filters.name, $options: "i" };
   }
   if (filters.phone) {
-    query.phone = { $regex: filters.phone, $options: "i" }; 
+    query.phone = { $regex: filters.phone, $options: "i" };
   }
   if (filters.email) {
-    query.email = { $regex: filters.email, $options: "i" }; 
+    query.email = { $regex: filters.email, $options: "i" };
   }
 
   if (typeof active !== "undefined") {
@@ -409,6 +409,57 @@ const filterUsers = async (filters) => {
   return users;
 };
 
+const updatePassword = async (userId, currentPassword, newPassword) => {
+  try {
+    console.log("userId:", userId);
+    console.log("currentPassword:", currentPassword);
+    console.log("newPassword:", newPassword);
+
+    if (!userId || !currentPassword || !newPassword) {
+      return {
+        status: "ERR",
+        message: "Missing required parameters",
+      };
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return {
+        status: "ERR",
+        message: "User not found",
+      };
+    }
+
+    if (!user.password) {
+      return {
+        status: "ERR",
+        message: "User has no password set",
+      };
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return {
+        status: "ERR",
+        message: "Current password is incorrect",
+      };
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    return {
+      status: "OK",
+      message: "Password updated successfully",
+    };
+  } catch (error) {
+    return {
+      status: "ERR",
+      message: error.message || "Failed to update password",
+    };
+  }
+};
 
 module.exports = {
   filterUsers,
@@ -426,4 +477,5 @@ module.exports = {
   updateQuesCount,
   updateAnswerCount,
   toggleActiveUser,
+  updatePassword,
 };

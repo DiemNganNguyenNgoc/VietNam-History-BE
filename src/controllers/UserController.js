@@ -375,7 +375,12 @@ const filterUsers = async (req, res) => {
     const { name, phone, email, active } = req.query;
 
     // Gọi service để lọc người dùng
-    const users = await UserServices.filterUsers({ name, phone, email, active });
+    const users = await UserServices.filterUsers({
+      name,
+      phone,
+      email,
+      active,
+    });
 
     // Trả về kết quả
     return res.status(200).json({
@@ -390,6 +395,22 @@ const filterUsers = async (req, res) => {
       message: "An error occurred while filtering users.",
       error: error.message,
     });
+  }
+};
+
+const updatePassword = async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  const userId = req.user.id; 
+
+  try {
+    const result = await UserServices.updatePassword(
+      userId,
+      currentPassword,
+      newPassword
+    );
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).json({ status: "ERR", message: error.message });
   }
 };
 
@@ -411,4 +432,5 @@ module.exports = {
   updateQuesCount,
   updateAnswerCount,
   toggleActiveUser,
+  updatePassword,
 };

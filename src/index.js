@@ -17,7 +17,6 @@ app.use(
     credentials: true, // cho phép gửi cookie
   })
 );
-app.use(bodyParser.json());
 app.use(cookieParser());
 
 // Cấu hình giới hạn tải lên (ví dụ: 50MB)
