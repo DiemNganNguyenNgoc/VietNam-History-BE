@@ -70,6 +70,7 @@ const updateQuestion = async (req, res) => {
   }
 };
 
+//Update Answer Count
 const updateAnswerCount = async (req, res) => {
   try {
     const questionId = req.params.id;

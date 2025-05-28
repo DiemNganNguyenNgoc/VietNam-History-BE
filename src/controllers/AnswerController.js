@@ -63,7 +63,6 @@ const updateAnswer = async (req, res) => {
 const deleteAnswer = async (req, res) => {
   try {
     const answerId = req.params.id;
-    console.log("ID", answerId)
     // Kiểm tra nếu ID câu tra loi không tồn tại
     if (!answerId) {
       return res.status(400).json({
@@ -313,7 +312,7 @@ const getAnswersByUserId = async (req, res) => {
 
     return res.status(200).json(response);
   } catch (e) {
-    console.error("Error fetching questions by user ID: ", e);
+   // console.error("Error fetching questions by user ID: ", e);
     return res.status(500).json({
       status: "ERR",
       message: "An error occurred while fetching the answers by user ID.",

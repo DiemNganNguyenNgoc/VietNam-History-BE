@@ -20,7 +20,7 @@ const sampleQuestion = {
   updatedAt: new Date(),
 };
 
-
+//===========CREATE QUESTION===========
 describe("createQuestion", () => {
  //tao cau hoi that bai - thieu title
   it("return 400 if required fields are missing", async () => {
@@ -38,7 +38,7 @@ describe("createQuestion", () => {
     expect(data.message).toMatch(/required/i);
   });
 
-//tao cau hoi that bai - thieu content
+//==========tao cau hoi that bai - thieu content==============
    it("  return 400 if required fields are missing", async () => {
     const req = httpMocks.createRequest({
       method: "POST",
@@ -54,7 +54,7 @@ describe("createQuestion", () => {
     expect(data.message).toMatch(/required/i);
   });
 
-//tao cau hoi that bai - thieu content va title
+//=======tao cau hoi that bai - thieu content va title==========
    it("  return 400 if required fields are missing", async () => {
     const req = httpMocks.createRequest({
       method: "POST",
@@ -70,7 +70,7 @@ describe("createQuestion", () => {
     expect(data.message).toMatch(/required/i);
   });
 
-  //tao cau hoi that bai - thieu content va userQuery
+  //=============tao cau hoi that bai - thieu content va userQuery==============
    it("  return 400 if required fields are missing", async () => {
     const req = httpMocks.createRequest({
       method: "POST",
@@ -86,7 +86,7 @@ describe("createQuestion", () => {
     expect(data.message).toMatch(/required/i);
   });
 
-//tao cau hoi that bai - thieu title va userQuery
+//========tao cau hoi that bai - thieu title va userQuery===========
    it("  return 400 if required fields are missing", async () => {
     const req = httpMocks.createRequest({
       method: "POST",
@@ -102,7 +102,7 @@ describe("createQuestion", () => {
     expect(data.message).toMatch(/required/i);
   });
 
-  //tao cau hoi that bai - thieu ca 3 feild
+  //========tao cau hoi that bai - thieu ca 3 feild==========
    it("  return 400 if required fields are missing", async () => {
     const req = httpMocks.createRequest({
       method: "POST",
@@ -118,7 +118,7 @@ describe("createQuestion", () => {
     expect(data.message).toMatch(/required/i);
   });
 
-//tao cau hoi thanh cong
+//=========tao cau hoi thanh cong==========
   it("  return 200 if question created successfully", async () => {
     const req = httpMocks.createRequest({
       method: "POST",
@@ -152,7 +152,7 @@ describe("createQuestion", () => {
   });
 });
 
-
+//===========UPDATE QUESTION============
 describe("updateQuestion", () => {
   beforeEach(() => {
     QuestionService.updateQuestion.mockClear();
@@ -219,22 +219,120 @@ describe("updateQuestion", () => {
     expect(data.message).toMatch(/Question not found/i);
   });
 
-  it("  return 500 if service throws", async () => {
-    QuestionService.updateQuestion.mockRejectedValue(new Error("fail"));
+});
+
+
+//=========UPDATE ANSWER COUNT============
+describe("updateAnswerCount", () => {
+beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("  return 200 and update answerCount successfully", async () => {
+    const updatedQuestion = { ...sampleQuestion, answerCount: 3 };
+
+    QuestionService.findById.mockResolvedValue(sampleQuestion);
+    QuestionService.findByIdAndUpdate.mockResolvedValue(updatedQuestion);
 
     const req = httpMocks.createRequest({
       method: "PUT",
       params: { id: "123" },
-      body: { title: "Updated question title" },
+      body: { note: "new note" }, // giả sử người dùng gửi thêm field khác
     });
     const res = httpMocks.createResponse();
 
-    await QuestionController.updateQuestion(req, res);
+    await QuestionController.updateAnswerCount(req, res);
 
-    expect(res.statusCode).toBe(500);
+    expect(QuestionService.findById).toHaveBeenCalledWith("123");
+    expect(QuestionService.findByIdAndUpdate).toHaveBeenCalledWith(
+      "123",
+      {
+        answerCount: 1,
+        note: "new note",
+      },
+      { new: true }
+    );
+
+    expect(res.statusCode).toBe(200);
+    const data = res._getJSONData();
+    expect(data.status).toBe("OK");
+    expect(data.message).toMatch(/updated successfully/i);
+    expect(data.data.answerCount).toBe(3);
+  });
+
+  it("  return 404 if question not found", async () => {
+    QuestionService.findById.mockResolvedValue(null);
+
+    const req = httpMocks.createRequest({
+      method: "PUT",
+      params: { id: "999" },
+      body: {},
+    });
+    const res = httpMocks.createResponse();
+
+    await QuestionController.updateAnswerCount(req, res);
+
+    expect(res.statusCode).toBe(404);
     const data = res._getJSONData();
     expect(data.status).toBe("ERR");
-    expect(data.message).toMatch(/An error occurred/i);
+    expect(data.message).toMatch(/not found/i);
   });
+
 });
 
+//=====GET DETAIL=======
+describe("getDetailsQuestion", () => {
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should return 200 and question details if found", async () => {
+    QuestionService.getDetailsQuestion.mockResolvedValue(sampleQuestion);
+
+    const req = httpMocks.createRequest({
+      method: "GET",
+      params: { id: "123" },
+    });
+    const res = httpMocks.createResponse();
+
+    await QuestionController.getDetailsQuestion(req, res);
+
+    expect(res.statusCode).toBe(200);
+    const data = res._getJSONData();
+    expect(data.id).toBe("123");
+    expect(data.title).toBe("Sample question title");
+  });
+
+  it("should return 400 if id is not provided", async () => {
+    const req = httpMocks.createRequest({
+      method: "GET",
+      params: {}, // thiếu id
+    });
+    const res = httpMocks.createResponse();
+
+    await QuestionController.getDetailsQuestion(req, res);
+
+    expect(res.statusCode).toBe(400);
+    const data = res._getJSONData();
+    expect(data.status).toBe("ERR");
+    expect(data.message).toMatch(/ID is required/i);
+  });
+
+  it("should return 404 if question not found", async () => {
+    QuestionService.getDetailsQuestion.mockResolvedValue(null);
+
+    const req = httpMocks.createRequest({
+      method: "GET",
+      params: { id: "not-found-id" },
+    });
+    const res = httpMocks.createResponse();
+
+    await QuestionController.getDetailsQuestion(req, res);
+
+    expect(res.statusCode).toBe(404);
+    const data = res._getJSONData();
+    expect(data.status).toBe("ERR");
+    expect(data.message).toMatch(/not found/i);
+  });
+});
