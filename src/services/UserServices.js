@@ -260,7 +260,12 @@ const addFollower = async (currentUserId, userIdToFollow) => {
     throw new Error("User not found");
   }
 
-  if (currentUser.following.includes(userIdToFollow)) {
+  // Check if already following by comparing string values of ObjectIDs
+  const isAlreadyFollowing = currentUser.following.some(
+    id => id.toString() === userIdToFollow
+  );
+
+  if (isAlreadyFollowing) {
     throw new Error("You are already following this user");
   }
 
@@ -299,7 +304,12 @@ const removeFollower = async (currentUserId, userIdToUnfollow) => {
     throw new Error("User not found");
   }
 
-  if (!currentUser.following.includes(userIdToUnfollow)) {
+  // Check if following by comparing string values of ObjectIDs
+  const isFollowing = currentUser.following.some(
+    id => id.toString() === userIdToUnfollow
+  );
+
+  if (!isFollowing) {
     throw new Error("You are not following this user");
   }
 

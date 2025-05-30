@@ -241,6 +241,13 @@ const addFollower = async (req, res) => {
     const currentUserId = req.user.id; // Lấy từ token đã xác thực
     const userIdToFollow = req.params.id;
 
+    if (!currentUserId || !userIdToFollow) {
+      return res.status(400).json({
+        status: "ERR",
+        message: "Missing user ID information",
+      });
+    }
+
     const response = await UserServices.addFollower(
       currentUserId,
       userIdToFollow
@@ -252,7 +259,11 @@ const addFollower = async (req, res) => {
       data: response,
     });
   } catch (error) {
-    res.status(500).json({ status: "ERR", message: error.message });
+    console.error("Error in addFollower:", error);
+    res.status(500).json({
+      status: "ERR",
+      message: error.message || "An error occurred while following user"
+    });
   }
 };
 
@@ -260,6 +271,13 @@ const removeFollower = async (req, res) => {
   try {
     const currentUserId = req.user.id; // Lấy từ token đã xác thực
     const userIdToUnfollow = req.params.id;
+
+    if (!currentUserId || !userIdToUnfollow) {
+      return res.status(400).json({
+        status: "ERR",
+        message: "Missing user ID information",
+      });
+    }
 
     const response = await UserServices.removeFollower(
       currentUserId,
@@ -272,7 +290,11 @@ const removeFollower = async (req, res) => {
       data: response,
     });
   } catch (error) {
-    res.status(500).json({ status: "ERR", message: error.message });
+    console.error("Error in removeFollower:", error);
+    res.status(500).json({
+      status: "ERR",
+      message: error.message || "An error occurred while unfollowing user"
+    });
   }
 };
 
@@ -400,7 +422,7 @@ const filterUsers = async (req, res) => {
 
 const updatePassword = async (req, res) => {
   const { currentPassword, newPassword } = req.body;
-  const userId = req.user.id; 
+  const userId = req.user.id;
 
   try {
     const result = await UserServices.updatePassword(
