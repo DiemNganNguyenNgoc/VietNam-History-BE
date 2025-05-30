@@ -27,11 +27,11 @@ const adminSchema = new mongoose.Schema(
       ref: "Commune",
       required: false,
     },
-    gender: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Gender",
-      required: false,
-    },
+    // gender: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "Gender",
+    //   required: false,
+    // },
   },
   {
     timestamps: true,
